@@ -1,4 +1,5 @@
 import requests
+import time
 
 def get_current_sea_level_pressure(api_key, lat, lon):
     """Get current sea level pressure from OpenWeatherMap API"""

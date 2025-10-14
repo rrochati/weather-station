@@ -12,7 +12,7 @@ case "$1" in
         echo "Starting BME280 sensor in background..."
         # Activate conda environment and run script
         source ~/miniconda3/bin/activate python311
-        nohup python $SCRIPT_NAME > $LOG_FILE 2>&1 &
+        nohup python -u $SCRIPT_NAME > $LOG_FILE 2>&1 &
         echo $! > $PID_FILE
         echo "Sensor started with PID $(cat $PID_FILE)"
         ;;
