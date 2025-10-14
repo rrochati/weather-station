@@ -2,8 +2,8 @@
 
 SCRIPT_DIR="/home/rrocha/weather-station"
 SCRIPT_NAME="weather-station.py"
-LOG_FILE="$SCRIPT_DIR/bme280_sensor.log"
-PID_FILE="$SCRIPT_DIR/bme280_sensor.pid"
+LOG_FILE="/home/rrocha/bme280_sensor.log"
+PID_FILE="/home/rrocha/bme280_sensor.pid"
 
 cd $SCRIPT_DIR
 

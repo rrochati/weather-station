@@ -16,7 +16,7 @@ weather = get_detailed_weather_data(api_key, latitude, longitude)
 air_quality = get_air_quality(api_key, latitude, longitude)
 
 # CSV file setup
-CSV_FILE = "weather_log.csv"
+CSV_FILE = "../weather_log.csv"
 
 # Initialize file with headers (if new)
 with open(CSV_FILE, "a", newline="") as f:
