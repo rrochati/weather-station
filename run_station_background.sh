@@ -9,7 +9,7 @@ cd $SCRIPT_DIR
 
 case "$1" in
     start)
-        echo "Starting BME280 sensor in background..."
+        echo "Starting weather station in background..."
         # Activate conda environment and run script
         source ~/miniconda3/bin/activate python311
         nohup python -u $SCRIPT_NAME > $LOG_FILE 2>&1 &
@@ -19,25 +19,25 @@ case "$1" in
     stop)
         if [ -f $PID_FILE ]; then
             PID=$(cat $PID_FILE)
-            echo "Stopping sensor (PID: $PID)..."
+            echo "Stopping weather station (PID: $PID)..."
             kill $PID
             rm $PID_FILE
-            echo "Sensor stopped."
+            echo "Weather station stopped."
         else
-            echo "No PID file found. Sensor may not be running."
+            echo "No PID file found. Weather station may not be running."
         fi
         ;;
     status)
         if [ -f $PID_FILE ]; then
             PID=$(cat $PID_FILE)
             if ps -p $PID > /dev/null; then
-                echo "Sensor is running (PID: $PID)"
+                echo "Weather station is running (PID: $PID)"
             else
                 echo "PID file exists but process not running"
                 rm $PID_FILE
             fi
         else
-            echo "Sensor is not running"
+            echo "Weather station is not running"
         fi
         ;;
     logs)

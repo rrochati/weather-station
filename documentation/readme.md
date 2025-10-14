@@ -4,7 +4,7 @@
 
 ## 🧩 Board Overview
 
-<img width="345" height="243" alt="image" src="https://raw.githubusercontent.com/DFRobot/DFRobotMediaWikiImage/master/Image/Name_SEN0236_Layout.png" />
+<img src="https://raw.githubusercontent.com/DFRobot/DFRobotMediaWikiImage/master/Image/Name_SEN0236_Layout.png" />
 
 **Connections summary**:
 
