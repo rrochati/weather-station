@@ -231,6 +231,9 @@ Calculated altitude: ~35m
 
 ## 🧰 Improving accuracy:
 
+### Using OpenWeatherMap API to get current sea level pressure
+Use sealevel.py
+
 ### Calibration for Accurate Readings
 When on upper floors, the sensor needs calibration:
 

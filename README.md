@@ -68,7 +68,7 @@ See generated wiring diagram (ADS1115 + wind sensors + BME280).
 
 ---
 
-## 📟 Weather Station Script (with Wi-Fi Geolocation)
+## 📟 Weather Station Script
 
 ```python
 import time
@@ -80,35 +80,6 @@ import adafruit_bme280
 import RPi.GPIO as GPIO
 import csv
 from datetime import datetime
-
-# -------------------------------------------------
-# Geolocation via IP
-# -------------------------------------------------
-def get_geo_ip():
-    try:
-        r = requests.get("https://ipinfo.io/json", timeout=5)
-        data = r.json()
-        lat, lon = map(float, data["loc"].split(","))
-        return {
-            "latitude": lat,
-            "longitude": lon,
-            "city": data.get("city"),
-            "region": data.get("region"),
-            "country": data.get("country"),
-            "ip": data.get("ip")
-        }
-    except Exception as e:
-        print("Geolocation error:", e)
-        return None
-
-geo = get_geo_ip()
-latitude = geo["latitude"] if geo else None
-longitude = geo["longitude"] if geo else None
-city = geo["city"] if geo else "Unknown"
-region = geo["region"] if geo else "Unknown"
-country = geo["country"] if geo else "Unknown"
-ip = geo["ip"] if geo else "Unknown"
-print(f"Station location: City: {city}, Coordinates: ({latitude}, {longitude}), Region: {region}, Country: {country}, IP: {ip}")
 
 # -------------------------------------------------
 # Configuration
@@ -254,7 +225,6 @@ try:
 
         # Print summary
         print(f"Timestamp: {timestamp}")
-        print(f"Location: {city}, ({latitude}, {longitude})")
         print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h), Dir: {direction if direction is not None else 'Unknown'}° ({v:.2f} V)")
         print(f"Rain: +{rain:.2f} mm this interval")
         print(f"Temp: {temp:.1f} °C | Humidity: {humidity:.1f}% | Pressure: {pressure:.1f} hPa | Altitude: {altitude:.1f} m")
@@ -267,30 +237,6 @@ finally:
 
 ```
 *(Script includes CSV logging, geolocation via ipinfo.io, BME280, ADS1115, wind speed/direction, and rainfall measurement.)*
-
----
-
-## 🌍 Wi-Fi / IP Geolocation Function
-
-```python
-def get_geo_ip():
-    try:
-        r = requests.get("https://ipinfo.io/json", timeout=5)
-        data = r.json()
-        lat, lon = map(float, data["loc"].split(","))
-        return {
-            "latitude": lat,
-            "longitude": lon,
-            "city": data.get("city"),
-            "region": data.get("region"),
-            "country": data.get("country"),
-            "ip": data.get("ip")
-        }
-    except Exception as e:
-        print("Geolocation error:", e)
-        return None
-```
-Uses **ipinfo.io** to obtain approximate latitude, longitude, and city based on your public IP.
 
 ---
 
