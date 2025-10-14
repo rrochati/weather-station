@@ -125,7 +125,7 @@ try:
             timestamp = datetime.now().isoformat(timespec='seconds')
             with open(CSV_FILE, "a", newline="") as f:
                 writer = csv.writer(f)
-                writer.writerow([timestamp, temperature, humidity, pressure:.4f, altitude:.2f])
+                writer.writerow([timestamp, temperature, humidity, pressure, altitude])
                 #writer.writerow([timestamp, temperature, humidity, pressure,
                 #                speed, direction, v, rain, altitude])
             
