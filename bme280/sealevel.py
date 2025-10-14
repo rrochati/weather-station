@@ -16,9 +16,7 @@ def get_current_sea_level_pressure(api_key, lat, lon):
         return 1013.25  # Fallback to standard pressure
 
 # Setup sensor
-#i2c = board.I2C()
 i2c = busio.I2C(board.SCL, board.SDA)
-#bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
 
 # Your location coordinates
