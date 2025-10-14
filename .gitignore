@@ -1,0 +1,7 @@
+weather_log.csv
+bme280_sensor.log
+bme280_sensor.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
