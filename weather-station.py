@@ -173,7 +173,7 @@ try:
             if air_quality:
                 print("\n=== Air Quality ===")
                 print(f"Air Quality Index: {air_quality['air_quality_index']}")
-                print(f"CO: {air_quality['humidity']}")
+                print(f"CO: {air_quality['co']}")
                 print(f"NO2: {air_quality['no2']}")
                 print(f"O3: {air_quality['o3']}%")
                 print(f"pm2.5: {air_quality['pm2_5']}")
