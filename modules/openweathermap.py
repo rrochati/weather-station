@@ -1,25 +1,40 @@
-import requests
 import time
+import sys
+import logging
+import requests
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)  # This ensures output goes to stdout
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 def get_current_sea_level_pressure(api_key, lat, lon):
     """Get current sea level pressure from OpenWeatherMap API"""
     url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=20)
         data = response.json()
         # Pressure is in hPa
         return data['main']['sea_level'] if 'sea_level' in data['main'] else data['main']['pressure']
-    except:
+    except Exception as e:
+        print(f"Error fetching sea level pressure: {e}")
+        logger.error(f"Error fetching sea level pressure: {e}")
         return 1013.25  # Fallback to standard pressure
 
 def get_detailed_weather_data(api_key, lat, lon):
     """Get comprehensive weather data from OpenWeatherMap API"""
     url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}&units=metric"
-    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=20)
         data = response.json()
-        
+
         weather_info = {
             'location': data['name'],
             'country': data['sys']['country'],
@@ -38,23 +53,24 @@ def get_detailed_weather_data(api_key, lat, lon):
             'sunset': time.ctime(data['sys']['sunset']),
             'timezone_offset': data['timezone'] / 3600  # Convert to hours
         }
-        
+
         return weather_info
-        
+
     except Exception as e:
         print(f"Error fetching weather data: {e}")
+        logger.error(f"Error fetching weather data: {e}")
         return None
 
 def get_air_quality(api_key, lat, lon):
     """Get air quality index and pollutant levels"""
     url = f"http://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&appid={api_key}"
-    
+
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=20)
         data = response.json()
-        
-        aqi_levels = {1: "Good", 2: "Fair", 3: "Moderate", 4: "Poor", 5: "Very Poor"}  
-        
+
+        aqi_levels = {1: "Good", 2: "Fair", 3: "Moderate", 4: "Poor", 5: "Very Poor"}
+
         return {
             'air_quality_index': aqi_levels[data['list'][0]['main']['aqi']],
             'co': data['list'][0]['components']['co'],
@@ -63,9 +79,10 @@ def get_air_quality(api_key, lat, lon):
             'pm2_5': data['list'][0]['components']['pm2_5'],
             'pm10': data['list'][0]['components']['pm10']
         }
-        
+
     except Exception as e:
         print(f"Error fetching air quality data: {e}")
+        logger.error(f"Error fetching air quality data: {e}")
         return None
 
 def print_detailed_weather_data(weather):
@@ -76,19 +93,13 @@ def print_detailed_weather_data(weather):
     print("\n=== TEMPERATURE ===")
     print(f"Temperature: {weather['temperature']:.1f}°C")
     print(f"Feels like: {weather['feels_like']:.1f}°C")
-    #print(f"BME280 Temperature: {bme280.temperature:.1f}°C")
 
     print("\n=== PRESSURE & ALTITUDE ===")
     print(f"Sea level pressure: {weather['sea_level_pressure']:.2f} hPa")
     print(f"Ground level pressure: {weather['ground_level_pressure']:.2f} hPa")
-    #print(f"BME280 Pressure: {bme280.pressure:.2f} hPa")
-
-    # Set accurate sea level pressure for altitude calculation
-    #print(f"Corrected Altitude: {bme280.altitude:.2f} meters")
 
     print("\n=== HUMIDITY ===")
     print(f"API Humidity: {weather['humidity']}%")
-    #print(f"BME280 Humidity: {bme280.relative_humidity:.1f}%")
 
     print("\n=== WEATHER CONDITIONS ===")
     print(f"Description: {weather['weather_description'].title()}")
@@ -102,11 +113,7 @@ def print_detailed_weather_data(weather):
     print("\n=== SUN TIMES ===")
     print(f"Sunrise: {weather['sunrise']}")
     print(f"Sunset: {weather['sunset']}")
-            
-    #print(f"Temperature: {temperature:.2f} °C")
-    #print(f"Humidity: {humidity:.2f} %")
-    #print(f"Pressure: {pressure:.4f} hPa")
-    #print(f"Altitude: {altitude:.0f} m")
+
     print("------")
 
 def print_air_quality(air_quality):
