@@ -6,7 +6,7 @@ import sys
 import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]
-from modules.openweathermap import * # pyright: ignore[reportMissingImports]
+from modules.openweathermap import get_current_sea_level_pressure, get_air_quality, get_detailed_weather_data # pyright: ignore[reportMissingImports]
 
 
 # Configure logging

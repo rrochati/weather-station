@@ -17,7 +17,7 @@ case "$1" in
         echo "Weather station started with PID $(cat $PID_FILE)"
         ;;
     stop)
-        if [ -f $PID_FILE ]; then
+        if [[ -f $PID_FILE ]]; then
             PID=$(cat $PID_FILE)
             echo "Stopping weather station (PID: $PID)..."
             kill $PID
@@ -28,7 +28,7 @@ case "$1" in
         fi
         ;;
     status)
-        if [ -f $PID_FILE ]; then
+        if [[ -f $PID_FILE ]]; then
             PID=$(cat $PID_FILE)
             if ps -p $PID > /dev/null; then
                 echo "Weather station is running (PID: $PID)"
@@ -41,7 +41,7 @@ case "$1" in
         fi
         ;;
     logs)
-        if [ -f $LOG_FILE ]; then
+        if [[ -f $LOG_FILE ]]; then
             tail -f $LOG_FILE
         else
             echo "No log file found"
