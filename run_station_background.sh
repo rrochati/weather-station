@@ -1,9 +1,9 @@
 #!/bin/bash
 
 SCRIPT_DIR="/home/rrocha/weather-station"
-SCRIPT_NAME="weather-station.py"
-LOG_FILE="/home/rrocha/bme280_sensor.log"
-PID_FILE="/home/rrocha/bme280_sensor.pid"
+SCRIPT_NAME="weather_station.py"
+LOG_FILE="/var/log/weather_station.log"
+PID_FILE="/var/log/weather_station.pid"
 
 cd $SCRIPT_DIR
 
@@ -14,7 +14,7 @@ case "$1" in
         source ~/miniconda3/bin/activate python311
         nohup python -u $SCRIPT_NAME > $LOG_FILE 2>&1 &
         echo $! > $PID_FILE
-        echo "Sensor started with PID $(cat $PID_FILE)"
+        echo "Weather station started with PID $(cat $PID_FILE)"
         ;;
     stop)
         if [ -f $PID_FILE ]; then
