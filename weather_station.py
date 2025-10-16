@@ -6,8 +6,8 @@ import sys
 import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]
-from modules.openweathermap import get_current_sea_level_pressure, get_air_quality, get_detailed_weather_data # pyright: ignore[reportMissingImports]
-
+from modules.openweathermap import get_current_sea_level_pressure, get_air_quality, get_detailed_weather_data
+from modules.openweathermap import print_detailed_weather_data, print_air_quality
 
 # Configure logging
 logging.basicConfig(
@@ -28,6 +28,12 @@ API_KEY = "12a5ff2b1dcb41f0d1ee2c301244ad6d"  # API key from OpenWeatherMap
 current_slp = get_current_sea_level_pressure(API_KEY, LATITUDE, LONGITUDE)
 weather = get_detailed_weather_data(API_KEY, LATITUDE, LONGITUDE)
 air_quality = get_air_quality(API_KEY, LATITUDE, LONGITUDE)
+
+if weather:
+    print_detailed_weather_data(weather)
+
+if air_quality:
+    print_air_quality(air_quality)
 
 # CSV file setup
 CSV_FILE = "../weather_log.csv"
@@ -74,12 +80,6 @@ try:
                 writer.writerow([timestamp, temperature, humidity, pressure, round(altitude, 1)])
                 #writer.writerow([timestamp, temperature, humidity, pressure,
                 #                speed, direction, v, rain, altitude])
-
-            if weather:
-                print_detailed_weather_data(weather)
-
-            if air_quality:
-                print_air_quality(air_quality)
 
             time.sleep(60)
 
