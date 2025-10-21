@@ -174,7 +174,7 @@ class WeatherDatabase:
                      api_o3, api_pm2_5, api_pm10)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 ''', (
-                    air_quality_data.get('timestamp'),
+                    timestamp,
                     air_quality_data.get('air_quality_index'),
                     air_quality_data.get('co'),
                     air_quality_data.get('no2'),

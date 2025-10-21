@@ -58,7 +58,12 @@ if air_quality:
     print_air_quality(air_quality)
     # Save air quality data to database
     timestamp = datetime.now().isoformat(timespec='seconds')
-    db.insert_air_quality_data(timestamp, air_quality)
+    logger.info(f"Saving air quality data with timestamp: {timestamp}")
+    logger.info(f"Air quality data structure: {air_quality}")
+    success = db.insert_air_quality_data(timestamp, air_quality)
+    if not success:
+        logger.error("Failed to save air quality data to database")
+
 
 # CSV file setup
 CSV_FILE = "/home/rrocha/logs/weather_log_trash.csv"
