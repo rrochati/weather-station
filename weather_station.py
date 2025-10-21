@@ -34,9 +34,19 @@ db = WeatherDatabase()
 logger.info("Fetching current weather conditions from OpenWeatherMap...")
 
 #current_slp = get_current_sea_level_pressure(API_KEY, LATITUDE, LONGITUDE)
-detailed_weather_data = get_detailed_weather_data(API_KEY, LATITUDE, LONGITUDE)
-air_quality = get_air_quality(API_KEY, LATITUDE, LONGITUDE)
-current_slp = detailed_weather_data['sea_level_pressure']  # Use current pressure as sea level pressure
+try:
+    detailed_weather_data = get_detailed_weather_data(API_KEY, LATITUDE, LONGITUDE)
+except Exception as e:
+    logger.error(f"Error fetching detailed weather data from api: {e}")
+    detailed_weather_data = None
+    
+try:
+    air_quality = get_air_quality(API_KEY, LATITUDE, LONGITUDE)
+except Exception as e:
+    logger.error(f"Error fetching air quality data from api: {e}")
+    air_quality = None
+    
+current_slp = detailed_weather_data['sea_level_pressure'] if detailed_weather_data else 1013.25  # Use current pressure as sea level pressure or fallback
 
 if detailed_weather_data:
     print_detailed_weather_data(detailed_weather_data)
@@ -51,7 +61,7 @@ if air_quality:
     db.insert_air_quality_data(timestamp, air_quality)
 
 # CSV file setup
-CSV_FILE = "../weather_log_trash.csv"
+CSV_FILE = "/home/rrocha/logs/weather_log_trash.csv"
 
 # Initialize file with headers (if new)
 with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:

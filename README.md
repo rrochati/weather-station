@@ -70,7 +70,8 @@ Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
 ---
 
 ## ✅ Future Enhancements
-- [ ] SQLite integration with daily summary queries 
+- [ ] SQLite integration with daily summary queries
+- [ ] Segregate bme280 and ic2 as modules
 - [ ] Improve geolocation
 - [ ] Local Flask dashboard  
 - [ ] MQTT publishing for Home Assistant  
