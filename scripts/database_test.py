@@ -6,6 +6,11 @@ Test script to verify SQLite database functionality
 import sqlite3
 import os
 from datetime import datetime
+import sys
+
+# Add the parent directory to Python path to find modules
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from modules.database import WeatherDatabase
 
 def test_database():

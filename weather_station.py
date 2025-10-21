@@ -28,7 +28,7 @@ API_KEY = "12a5ff2b1dcb41f0d1ee2c301244ad6d"  # API key from OpenWeatherMap
 
 # Initialize database
 logger.info("Initializing database...")
-db = api_coDatabase()
+db = WeatherDatabase()
 
 # Get current conditions from API
 logger.info("Fetching current weather conditions from OpenWeatherMap...")
