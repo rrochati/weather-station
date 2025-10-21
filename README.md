@@ -53,34 +53,16 @@ timestamp, temperature, humidity, pressure, round(altitude, 1)]
 - null: "Black hole" that discards all input
 - nohup: Prevents process from stopping when terminal closes
 
-## 🗄 Optional SQLite Integration
+## Geolocation
+The apps use openweathermap api with hardcoded latitude and longitude for now.
 
-SQLite can replace CSV for structured long-term storage. Example:
 
-```python
-import sqlite3
+## 🗄 SQLite Integration
 
-db = sqlite3.connect("weather.db")
-cur = db.cursor()
-cur.execute("""
-CREATE TABLE IF NOT EXISTS weather (
-    timestamp TEXT,
-    temperature REAL,
-    humidity REAL,
-    pressure REAL,
-    wind_speed REAL,
-    wind_dir REAL,
-    wind_vane_voltage REAL,
-    rain REAL,
-    altitude REAL
-)
-""")
-db.commit()
-```
+SQLite replace CSV for structured long-term storage. Check ***documentation/SQLITE_README.MD*** for setup instructions
 
----
 
-## 🛰 Optional GPS Integration
+## 🛰 GPS Integration
 
 Replace IP geolocation with GPS (e.g., Neo-6M, u-blox M8N).  
 Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
@@ -88,8 +70,8 @@ Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
 ---
 
 ## ✅ Future Enhancements
+- [ ] SQLite integration with daily summary queries 
 - [ ] Improve geolocation
-- [ ] SQLite integration with daily summary queries  
 - [ ] Local Flask dashboard  
 - [ ] MQTT publishing for Home Assistant  
 
