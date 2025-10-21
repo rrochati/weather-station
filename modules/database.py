@@ -117,7 +117,7 @@ class WeatherDatabase:
                       wind_speed, wind_direction, wind_vane_voltage, rain_interval,
                       sea_level_pressure))
                 conn.commit()
-                logger.info(f"Weather reading saved: T={temperature:.1f}°C, H={humidity:.1f}%, P={pressure:.1f}hPa")
+                logger.info(f"Weather reading saved: T={temperature:.1f}°C, H={humidity:.1f}%, P={pressure:.1f}hPa, SLP={sea_level_pressure:.1f}hPa, Alt={altitude:.1f}m")
                 return True
         except sqlite3.Error as e:
             logger.error(f"Error inserting weather reading: {e}")
@@ -167,8 +167,6 @@ class WeatherDatabase:
         try:
             with sqlite3.connect(self.db_path) as conn:
                 cursor = conn.cursor()
-                components = air_quality_data.get('list', [{}])[0].get('components', {}) if air_quality_data.get('list') else {}
-                aqi = air_quality_data.get('list', [{}])[0].get('main', {}).get('aqi') if air_quality_data.get('list') else None
                 
                 cursor.execute('''
                     INSERT INTO air_quality
@@ -177,7 +175,7 @@ class WeatherDatabase:
                     VALUES (?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     air_quality_data.get('timestamp'),
-                    air_quality_data.get('aqi'),
+                    air_quality_data.get('air_quality_index'),
                     air_quality_data.get('co'),
                     air_quality_data.get('no2'),
                     air_quality_data.get('o3'),
