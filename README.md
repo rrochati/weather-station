@@ -35,16 +35,16 @@ timestamp, temperature, humidity, pressure, round(altitude, 1)]
 ## ⚡ Simple management script:
 
 ### Start sensor in background
-./run_station_background.sh start.sh start
+./run_station_background.sh start
 
 ### Check if it's running
-./run_station_background.sh start.sh status
+./run_station_background.sh status
 
 ### View logs
-./run_station_background.sh start.sh logs
+./run_station_background.sh logs
 
 ### Stop the sensor
-./run_station_background.sh start.sh stop
+./run_station_background.sh stop
 
 ***Explanation of Symbols***
 - &: Runs command in background
