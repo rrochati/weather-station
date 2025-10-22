@@ -35,16 +35,16 @@ timestamp, temperature, humidity, pressure, round(altitude, 1)]
 ## ⚡ Simple management script:
 
 ### Start sensor in background
-./run_station_background.sh start.sh start
+./run_station_background.sh start
 
 ### Check if it's running
-./run_station_background.sh start.sh status
+./run_station_background.sh status
 
 ### View logs
-./run_station_background.sh start.sh logs
+./run_station_background.sh logs
 
 ### Stop the sensor
-./run_station_background.sh start.sh stop
+./run_station_background.sh stop
 
 ***Explanation of Symbols***
 - &: Runs command in background
@@ -53,34 +53,16 @@ timestamp, temperature, humidity, pressure, round(altitude, 1)]
 - null: "Black hole" that discards all input
 - nohup: Prevents process from stopping when terminal closes
 
-## 🗄 Optional SQLite Integration
+## Geolocation
+The apps use openweathermap api with hardcoded latitude and longitude for now.
 
-SQLite can replace CSV for structured long-term storage. Example:
 
-```python
-import sqlite3
+## 🗄 SQLite Integration
 
-db = sqlite3.connect("weather.db")
-cur = db.cursor()
-cur.execute("""
-CREATE TABLE IF NOT EXISTS weather (
-    timestamp TEXT,
-    temperature REAL,
-    humidity REAL,
-    pressure REAL,
-    wind_speed REAL,
-    wind_dir REAL,
-    wind_vane_voltage REAL,
-    rain REAL,
-    altitude REAL
-)
-""")
-db.commit()
-```
+SQLite replace CSV for structured long-term storage. Check ***documentation/SQLITE_README.MD*** for setup instructions
 
----
 
-## 🛰 Optional GPS Integration
+## 🛰 GPS Integration
 
 Replace IP geolocation with GPS (e.g., Neo-6M, u-blox M8N).  
 Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
@@ -88,8 +70,9 @@ Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
 ---
 
 ## ✅ Future Enhancements
+- [ ] SQLite integration with daily summary queries
+- [ ] Segregate bme280 and ic2 as modules
 - [ ] Improve geolocation
-- [ ] SQLite integration with daily summary queries  
 - [ ] Local Flask dashboard  
 - [ ] MQTT publishing for Home Assistant  
 
