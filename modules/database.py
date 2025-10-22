@@ -7,7 +7,7 @@ import os
 logger = logging.getLogger(__name__)
 
 class WeatherDatabase:
-    def __init__(self, db_path: str = "../weather_data.db"):
+    def __init__(self, db_path: str = "/home/rrocha/data/weather_data.db"):
         self.db_path = db_path
         self.init_database()
     
