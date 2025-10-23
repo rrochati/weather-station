@@ -8,7 +8,6 @@ logger = logging.getLogger(__name__)
 def get_current_sea_level_pressure(api_key, lat, lon):
     """Get current sea level pressure from OpenWeatherMap API"""
     url = f"http://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={api_key}"
-    print(f"key: {api_key}")
     try:
         response = requests.get(url, timeout=20)
         data = response.json()
