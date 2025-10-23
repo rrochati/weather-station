@@ -35,16 +35,16 @@ timestamp, temperature, humidity, pressure, round(altitude, 1)]
 ## ⚡ Simple management script:
 
 ### Start sensor in background
-./run_station_background.sh start.sh start
+./run_station_background.sh start
 
 ### Check if it's running
-./run_station_background.sh start.sh status
+./run_station_background.sh status
 
 ### View logs
-./run_station_background.sh start.sh logs
+./run_station_background.sh logs
 
 ### Stop the sensor
-./run_station_background.sh start.sh stop
+./run_station_background.sh stop
 
 ***Explanation of Symbols***
 - &: Runs command in background
@@ -53,34 +53,71 @@ timestamp, temperature, humidity, pressure, round(altitude, 1)]
 - null: "Black hole" that discards all input
 - nohup: Prevents process from stopping when terminal closes
 
-## 🗄 Optional SQLite Integration
+## Set up as systemd service:
+- Copy service file to systemd:
+    ```bash
+    sudo cp /home/rrocha/weather-station/weather-station.service /etc/systemd/system/weather-station.service
+    ```
 
-SQLite can replace CSV for structured long-term storage. Example:
+- Set up .env:
+Copy .env.example as .env and edit it for your values.
 
-```python
-import sqlite3
+    ```bash
+    # Set secure permissions
+    chmod 600 /home/rrocha/weather-station/.env
+    chown rrocha:rrocha /home/rrocha/weather-station/.env
 
-db = sqlite3.connect("weather.db")
-cur = db.cursor()
-cur.execute("""
-CREATE TABLE IF NOT EXISTS weather (
-    timestamp TEXT,
-    temperature REAL,
-    humidity REAL,
-    pressure REAL,
-    wind_speed REAL,
-    wind_dir REAL,
-    wind_vane_voltage REAL,
-    rain REAL,
-    altitude REAL
-)
-""")
-db.commit()
-```
+    # Make sure it's not tracked by git
+    echo ".env" >> /home/rrocha/weather-station/.gitignore
+    ```
 
----
+- Enable and start the service:
+    ```bash
+    # Reload systemd configuration
+    sudo systemctl daemon-reload
 
-## 🛰 Optional GPS Integration
+    # Enable service to start at boot
+    sudo systemctl enable weather-station.service
+
+    # Start the service
+    sudo systemctl start weather-station.service
+    ```
+
+- Service Management Commands
+Once set up, you can control your service with:
+    ```bash
+    # Start the service
+    sudo systemctl start weather-station.service
+
+    # Stop the service
+    sudo systemctl stop weather-station.service
+
+    # Restart the service
+    sudo systemctl restart weather-station.service
+
+    # Reload configuration (if the service supports it)
+    sudo systemctl reload weather-station.service
+
+    # Check status
+    sudo systemctl status weather-station.service
+
+    # View logs
+    sudo journalctl -u weather-station.service -f
+
+    # View recent logs
+    sudo journalctl -u weather-station.service --since "1 hour ago"
+    ```
+
+## Geolocation
+The apps use openweathermap api with hardcoded latitude and longitude for now.
+
+
+## 🗄 SQLite Integration
+
+SQLite replace CSV for structured long-term storage. Check ***documentation/SQLITE_README.MD*** for setup instructions
+
+
+## 🛰 GPS Integration
 
 Replace IP geolocation with GPS (e.g., Neo-6M, u-blox M8N).  
 Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
@@ -88,8 +125,9 @@ Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
 ---
 
 ## ✅ Future Enhancements
+- [ ] SQLite integration with daily summary queries
+- [ ] Segregate bme280 and ic2 as modules
 - [ ] Improve geolocation
-- [ ] SQLite integration with daily summary queries  
 - [ ] Local Flask dashboard  
 - [ ] MQTT publishing for Home Assistant  
 
@@ -99,4 +137,4 @@ Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
 
 - [SparkFun Weather Meter Datasheet (PDF)](https://cdn.sparkfun.com/assets/d/1/e/0/6/DS-15901-Weather_Meter.pdf)
 - [DFRobot Gravity ADS1115](https://www.dfrobot.com/product-1894.html)
-- [Adafruit BME280 Guide](https://learn.adafruit.com/adafruit-bme280-humidity-barometric-pressure-temperature-sensor-breakout)
+
