@@ -3,6 +3,7 @@ import csv
 from datetime import datetime
 import logging
 import sys
+import os
 import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]
@@ -22,9 +23,9 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 # Your location coordinates
-LATITUDE = 38.683822  # Replace with your LATITUDE
-LONGITUDE = -9.149931  # Replace with your LONGITUDE
-API_KEY = "12a5ff2b1dcb41f0d1ee2c301244ad6d"  # API key from OpenWeatherMap
+LATITUDE = os.getenv("LATITUDE", "38.683822")  # Replace with your LATITUDE
+LONGITUDE = os.getenv("LONGITUDE", "-9.149931")  # Replace with your LONGITUDE
+API_KEY = os.getenv("API_KEY", "none")  # API key from OpenWeatherMap
 
 # Initialize database
 logger.info("Initializing database...")

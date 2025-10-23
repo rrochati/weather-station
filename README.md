@@ -53,6 +53,61 @@ timestamp, temperature, humidity, pressure, round(altitude, 1)]
 - null: "Black hole" that discards all input
 - nohup: Prevents process from stopping when terminal closes
 
+## Set up as systemd service:
+- Copy service file to systemd:
+    ```bash
+    sudo cp /home/rrocha/weather-station/weather-station.service /etc/systemd/system/weather-station.service
+    ```
+
+- Set up .env:
+Copy .env.example as .env and edit it for your values.
+
+    ```bash
+    # Set secure permissions
+    chmod 600 /home/rrocha/weather-station/.env
+    chown rrocha:rrocha /home/rrocha/weather-station/.env
+
+    # Make sure it's not tracked by git
+    echo ".env" >> /home/rrocha/weather-station/.gitignore
+    ```
+
+- Enable and start the service:
+    ```bash
+    # Reload systemd configuration
+    sudo systemctl daemon-reload
+
+    # Enable service to start at boot
+    sudo systemctl enable weather-station.service
+
+    # Start the service
+    sudo systemctl start weather-station.service
+    ```
+
+- Service Management Commands
+Once set up, you can control your service with:
+    ```bash
+    # Start the service
+    sudo systemctl start weather-station.service
+
+    # Stop the service
+    sudo systemctl stop weather-station.service
+
+    # Restart the service
+    sudo systemctl restart weather-station.service
+
+    # Reload configuration (if the service supports it)
+    sudo systemctl reload weather-station.service
+
+    # Check status
+    sudo systemctl status weather-station.service
+
+    # View logs
+    sudo journalctl -u weather-station.service -f
+
+    # View recent logs
+    sudo journalctl -u weather-station.service --since "1 hour ago"
+    ```
+
 ## Geolocation
 The apps use openweathermap api with hardcoded latitude and longitude for now.
 
@@ -82,4 +137,4 @@ Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
 
 - [SparkFun Weather Meter Datasheet (PDF)](https://cdn.sparkfun.com/assets/d/1/e/0/6/DS-15901-Weather_Meter.pdf)
 - [DFRobot Gravity ADS1115](https://www.dfrobot.com/product-1894.html)
-- [Adafruit BME280 Guide](https://learn.adafruit.com/adafruit-bme280-humidity-barometric-pressure-temperature-sensor-breakout)
+
