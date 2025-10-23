@@ -3,6 +3,7 @@ import csv
 from datetime import datetime
 import logging
 import sys
+import os
 import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]
@@ -10,21 +11,30 @@ from modules.openweathermap import get_current_sea_level_pressure, get_air_quali
 from modules.openweathermap import print_detailed_weather_data, print_air_quality
 from modules.database import WeatherDatabase
 
+LOG_FILE = os.getenv("LOG_FILE", "/home/rrocha/logs/weather_station.log")
+
+print(f"Log file: {LOG_FILE}")
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(sys.stdout)  # This ensures output goes to stdout
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
     ]
 )
 
 logger = logging.getLogger(__name__)
 
 # Your location coordinates
-LATITUDE = 38.683822  # Replace with your LATITUDE
-LONGITUDE = -9.149931  # Replace with your LONGITUDE
-API_KEY = "12a5ff2b1dcb41f0d1ee2c301244ad6d"  # API key from OpenWeatherMap
+LATITUDE = os.getenv("LATITUDE", "38.683822")  # Replace with your LATITUDE
+LONGITUDE = os.getenv("LONGITUDE", "-9.149931")  # Replace with your LONGITUDE
+API_KEY = os.getenv("API_KEY", "none")  # API key from OpenWeatherMap
+
+print(f"LAT: {LATITUDE}")
+print(f"LONG: {LONGITUDE}")
+print(f"KEY: {API_KEY}")
 
 # Initialize database
 logger.info("Initializing database...")
@@ -124,9 +134,9 @@ try:
                 logger.warning("Failed to save to database, continuing...")
 
             # Also write to CSV for backup/compatibility
-            with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:
-                writer = csv.writer(f)
-                writer.writerow([timestamp, temperature, humidity, pressure, round(altitude, 1)])
+            #with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:
+            #    writer = csv.writer(f)
+            #    writer.writerow([timestamp, temperature, humidity, pressure, round(altitude, 1)])
 
 
             time.sleep(60)

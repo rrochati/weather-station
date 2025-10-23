@@ -3,15 +3,6 @@ import sys
 import logging
 import requests
 
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout)  # This ensures output goes to stdout
-    ]
-)
-
 logger = logging.getLogger(__name__)
 
 def get_current_sea_level_pressure(api_key, lat, lon):
