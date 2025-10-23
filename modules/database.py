@@ -3,11 +3,26 @@ import logging
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 import os
+import sys
+
+LOG_FILE = os.getenv("LOG_FILE", "/home/rrocha/logs/weather_station.log")
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),           # Console
+        logging.FileHandler(LOG_FILE, mode='a')      # File
+    ]
+)
 
 logger = logging.getLogger(__name__)
 
+DB_FILE = LOG_FILE = os.getenv("DB_FILE", "/home/rrocha/data/weather_data.db")
+
 class WeatherDatabase:
-    def __init__(self, db_path: str = "/home/rrocha/data/weather_data.db"):
+    #def __init__(self, db_path: str = "/home/rrocha/data/weather_data.db"):
+    def __init__(self, db_path: str = DB_FILE):
         self.db_path = db_path
         self.init_database()
     
