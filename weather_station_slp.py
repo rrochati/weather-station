@@ -33,28 +33,58 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-# CSV file setup
-#CSV_FILE = "/home/rrocha/logs/weather_log_trash.csv"
-
-# Initialize file with headers (if new)
-#with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:
-#    writer = csv.writer(f)
-#    if f.tell() == 0:  # file empty
-#        writer.writerow([
-#            "timestamp", "temperature_C", "humidity_%", "pressure_hPa",
-#            "altitude", 
-#            "wind_speed_m_s", "wind_dir_deg", "wind_vane_voltage_V",
-#            "rain_interval_mm"
-#        ])
-
-
 class WeatherStationManager:
     def __init__(self):
         self.current_slp = 1013.25  # Default sea level pressure
         self.last_weather_update = None
         self.bme280 = None
         self.weather_data = None
+        # Define fixed update times (hours in 24h format)
+        self.update_hours = [0, 6, 12, 18]  # 00:00, 06:00, 12:00, 18:00
         
+    def get_next_update_time(self):
+        """Calculate the next scheduled update time"""
+        now = datetime.now()
+        today = now.date()
+        
+        # Find the next update time today
+        for hour in self.update_hours:
+            next_update = datetime.combine(today, datetime.min.time().replace(hour=hour))
+            if next_update > now:
+                return next_update
+        
+        # If no more updates today, get the first update time tomorrow
+        tomorrow = today + timedelta(days=1)
+        return datetime.combine(tomorrow, datetime.min.time().replace(hour=self.update_hours[0]))
+    
+    def should_update_weather(self):
+        """Check if it's time to update weather data based on fixed schedule"""
+        now = datetime.now()
+        current_hour = now.hour
+        current_minute = now.minute
+        
+        # Check if we're within the first 5 minutes of an update hour
+        if current_hour in self.update_hours and current_minute < 5:
+            # Check if we haven't updated in the last hour to avoid duplicate updates
+            if self.last_weather_update is None:
+                return True
+            
+            time_since_update = now - self.last_weather_update
+            return time_since_update >= timedelta(hours=1)
+        
+        return False
+    
+    def get_time_until_next_update(self):
+        """Get human-readable time until next weather update"""
+        next_update = self.get_next_update_time()
+        now = datetime.now()
+        time_diff = next_update - now
+        
+        hours = int(time_diff.total_seconds() // 3600)
+        minutes = int((time_diff.total_seconds() % 3600) // 60)
+        
+        return f"{hours}h {minutes}m", next_update
+    
     def initialize_sensor(self):
         """Initialize BME280 sensor"""
         try:
@@ -91,8 +121,13 @@ class WeatherStationManager:
                     self.bme280.sea_level_pressure = self.current_slp
                 
                 self.last_weather_update = datetime.now()
-                logger.info("Weather data updated successfully")
+                logger.info("Weather data updated successfully at %s", self.last_weather_update.strftime('%H:%M:%S'))
                 logger.info("%s", print_detailed_weather_data(self.weather_data))
+                
+                # Log next update time
+                time_until_next, next_update_time = self.get_time_until_next_update()
+                logger.info("Next weather update scheduled for: %s (in %s)", 
+                           next_update_time.strftime('%H:%M'), time_until_next)
             else:
                 logger.error("Failed to fetch weather data, using default sea level pressure")
                 
@@ -100,14 +135,6 @@ class WeatherStationManager:
             logger.error("Error updating weather data: %s", e)
             logger.info("Continuing with previous sea level pressure: %.2f hPa", self.current_slp)
 
-    def should_update_weather(self):
-        """Check if it's time to update weather data"""
-        if self.last_weather_update is None:
-            return True
-        
-        time_since_update = datetime.now() - self.last_weather_update
-        return time_since_update >= timedelta(hours=WEATHER_UPDATE_INTERVAL_HOURS)
-    
     def log_initial_air_quality(self):
         """Log air quality once at startup"""
         try:
@@ -157,16 +184,17 @@ class WeatherStationManager:
         stats = db.get_database_stats()
         logger.info("Database stats: %s", stats)
         
-        # Initialize CSV file
-        #self.initialize_csv()
-        
         # Log initial air quality (only once at startup)
         self.log_initial_air_quality()
         
         logger.info("=== WEATHER STATION CONFIGURATION ===")
-        logger.info(f"Weather data updates: every {WEATHER_UPDATE_INTERVAL_HOURS} hours")
+        logger.info("Weather data updates: 4 times daily at 00:00, 06:00, 12:00, 18:00")
         logger.info(f"Sensor readings: every {SENSOR_READ_INTERVAL_MINUTES} minute(s)")
-        #logger.info(f"CSV log file: {CSV_FILE}")
+        
+        # Show next update time
+        time_until_next, next_update_time = self.get_time_until_next_update()
+        logger.info("Next weather update: %s (in %s)", 
+                   next_update_time.strftime('%Y-%m-%d %H:%M'), time_until_next)
         logger.info("====================================")
         
         logger.info("Starting weather station monitoring...")
@@ -175,7 +203,7 @@ class WeatherStationManager:
         
         while True:
             try:
-                # Update weather data and sea level pressure if needed
+                # Update weather data if it's time
                 if self.should_update_weather():
                     self.update_weather_data()
                 
@@ -187,24 +215,28 @@ class WeatherStationManager:
                 
                 reading_count += 1
                 
-                # Log sensor readings (simplified output for continuous monitoring)
+                # Log sensor readings
                 logger.info(f"Reading #{reading_count}: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
                 
-                # Write to CSV
-                #self.write_to_csv(temperature, humidity, pressure, altitude)
-                
-                #Save sensor data to database
+                # Save sensor data to database
                 timestamp = datetime.now().isoformat(timespec='seconds')
+                success = db.insert_weather_reading(
+                    timestamp=timestamp,
+                    temperature=temperature,
+                    humidity=humidity,
+                    pressure=pressure,
+                    altitude=altitude,
+                    sea_level_pressure=self.current_slp
+                )
                 
-                # Calculate time until next weather update
-                if self.last_weather_update:
-                    time_since_update = datetime.now() - self.last_weather_update
-                    time_until_next_update = timedelta(hours=WEATHER_UPDATE_INTERVAL_HOURS) - time_since_update
-                    hours_remaining = time_until_next_update.total_seconds() / 3600
-                    
-                    # Log weather update countdown every 30 readings (30 minutes)
-                    if reading_count % 30 == 0:
-                        logger.info(f"Next weather update in {hours_remaining:.1f} hours")
+                if not success:
+                    logger.warning("Failed to save reading to database")
+                
+                # Log next weather update info every 30 readings (30 minutes)
+                if reading_count % 30 == 0:
+                    time_until_next, next_update_time = self.get_time_until_next_update()
+                    logger.info("Next weather update: %s (in %s)", 
+                               next_update_time.strftime('%H:%M'), time_until_next)
                 
                 # Wait for next reading
                 time.sleep(SENSOR_READ_INTERVAL_MINUTES * 60)
@@ -215,7 +247,7 @@ class WeatherStationManager:
             except Exception as e:
                 logger.error(f"Error in main loop: {e}")
                 logger.info("Retrying in 30 seconds...")
-                time.sleep(30)  # Wait before retrying
+                time.sleep(30)
         
         logger.info("Weather station stopped.")
 
