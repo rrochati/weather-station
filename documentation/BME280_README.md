@@ -35,7 +35,8 @@ Use the 3.3V pin, not 5V — the BME280 is a 3.3 V device.
 Use Dupont jumper wires (female–female if using header pins).
 Double-check orientation: GND next to VIN is a good sanity check.
 
-![alt text](image-1.png)
+![alt text](images/DFR0553_wiring.png)
+* Actually the image shows a DFR0553 board, but the connections are the same. Change this later.
 
 
 
