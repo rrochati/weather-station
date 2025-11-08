@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Simple Anemometer Test Script
+Simple Anemometer Test Script (using lgpio)
 Tests SparkFun Weather Meter Kit anemometer on GPIO17
 """
 
-import RPi.GPIO as GPIO
+import lgpio
 import time
 import signal
 import sys
@@ -18,31 +18,34 @@ SPEED_CONV = 0.6667  # m/s per pulse/sec (SparkFun specification)
 pulse_count = 0
 test_start_time = None
 last_pulse_time = None
+gpio_handle = None
 
 def signal_handler(sig, frame):
     """Clean exit on Ctrl+C"""
     print("\n\n🛑 Test stopped by user")
     cleanup_and_exit()
 
-def anemo_pulse_callback(channel):
+def anemo_pulse_callback(gpio, level, tick):
     """Callback function for each anemometer pulse"""
     global pulse_count, last_pulse_time
     
-    current_time = time.time()
-    pulse_count += 1
-    last_pulse_time = current_time
-    
-    # Calculate time since last pulse (for debugging)
-    if pulse_count > 1:
-        time_diff = current_time - last_pulse_time if last_pulse_time else 0
-        print(f"💨 Pulse #{pulse_count} (gap: {time_diff:.3f}s)")
-    else:
-        print(f"💨 First pulse detected!")
+    if level == 0:  # Falling edge (switch closes)
+        current_time = time.time()
+        pulse_count += 1
+        
+        # Calculate time since last pulse (for debugging)
+        if pulse_count > 1 and last_pulse_time:
+            time_diff = current_time - last_pulse_time
+            print(f"💨 Pulse #{pulse_count} (gap: {time_diff:.3f}s)")
+        else:
+            print(f"💨 First pulse detected!")
+        
+        last_pulse_time = current_time
 
 def calculate_wind_speed(pulses, time_period):
     """Calculate wind speed from pulse count and time"""
     if time_period <= 0:
-        return 0
+        return 0, 0
     
     pulses_per_second = pulses / time_period
     speed_ms = pulses_per_second * SPEED_CONV  # m/s
@@ -52,20 +55,22 @@ def calculate_wind_speed(pulses, time_period):
 
 def cleanup_and_exit():
     """Clean up GPIO and exit"""
+    global gpio_handle
     print("🧹 Cleaning up GPIO...")
-    GPIO.cleanup()
+    if gpio_handle is not None:
+        lgpio.gpiochip_close(gpio_handle)
     print("✅ Test completed!")
     sys.exit(0)
 
 def print_test_header():
     """Print test information"""
     print("=" * 60)
-    print("🌬️  ANEMOMETER BENCH TEST")
+    print("🌬️  ANEMOMETER BENCH TEST (lgpio version)")
     print("=" * 60)
     print(f"📍 GPIO Pin: {ANEMO_PIN} (Physical Pin 11)")
     print(f"🔧 Conversion: {SPEED_CONV} m/s per pulse/sec")
     print(f"⚡ Pull-up: Internal (enabled)")
-    print(f"🕐 Debounce: 10ms (software)")
+    print(f"🕐 Debounce: Hardware + software")
     print("=" * 60)
     print("📋 Instructions:")
     print("   1. Spin anemometer by hand")
@@ -75,7 +80,7 @@ def print_test_header():
     print()
 
 def main():
-    global test_start_time, pulse_count
+    global test_start_time, pulse_count, gpio_handle
     
     # Set up signal handler for clean exit
     signal.signal(signal.SIGINT, signal_handler)
@@ -84,17 +89,16 @@ def main():
     
     try:
         # Setup GPIO
-        print("🔧 Setting up GPIO...")
-        GPIO.setmode(GPIO.BCM)
-        GPIO.setup(ANEMO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        print("🔧 Setting up GPIO with lgpio...")
         
-        # Add interrupt detection
-        GPIO.add_event_detect(
-            ANEMO_PIN, 
-            GPIO.FALLING, 
-            callback=anemo_pulse_callback, 
-            bouncetime=10
-        )
+        # Open GPIO chip
+        gpio_handle = lgpio.gpiochip_open(0)
+        
+        # Set pin as input with pull-up
+        lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN, lgpio.SET_PULL_UP)
+        
+        # Set up callback for falling edge
+        callback = lgpio.callback(gpio_handle, ANEMO_PIN, lgpio.FALLING_EDGE, anemo_pulse_callback)
         
         print("✅ GPIO setup complete!")
         print("🎯 Waiting for anemometer pulses... (spin it!)")
