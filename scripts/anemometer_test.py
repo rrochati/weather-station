@@ -8,6 +8,8 @@ import lgpio
 import time
 import signal
 import sys
+import board # pyright: ignore[reportMissingImports]
+import busio # pyright: ignore[reportMissingImports]
 from datetime import datetime
 
 # Configuration
@@ -88,6 +90,9 @@ def main():
     print_test_header()
     
     try:
+        logger.info("Initializing I2C...")
+        i2c = busio.I2C(board.SCL, board.SDA)
+        
         # Setup GPIO
         print("🔧 Setting up GPIO with lgpio...")
         

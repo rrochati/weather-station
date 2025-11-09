@@ -120,6 +120,8 @@ class WeatherStationManager:
                 if self.bme280:
                     self.bme280.sea_level_pressure = self.current_slp
                 
+                ## Add save to database function here
+                
                 self.last_weather_update = datetime.now()
                 logger.info("Weather data updated successfully at %s", self.last_weather_update.strftime('%H:%M:%S'))
                 logger.info("%s", print_detailed_weather_data(self.weather_data))
@@ -155,20 +157,7 @@ class WeatherStationManager:
                 
         except Exception as e:
             logger.error("Error fetching initial air quality data: %s", e)
-    
-#    def initialize_csv(self):
-#        """Initialize CSV file with headers if new"""
-#        try:
-#            with open(CSV_FILE, "a", newline="", encoding="utf-8") as f:
-#                writer = csv.writer(f)
-#                if f.tell() == 0:  # file empty
-#                    writer.writerow([
-#                        "timestamp", "temperature_C", "humidity_%", "pressure_hPa",
-#                        "altitude_m", "sea_level_pressure_hPa"
-#                    ])
-#                    logger.info(f"Created CSV file: {CSV_FILE}")
-#        except Exception as e:
-#            logger.error(f"Error initializing CSV: {e}")
+
 
     def run(self):
         """Main monitoring loop"""
