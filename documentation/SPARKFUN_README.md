@@ -46,7 +46,7 @@ PS: And the extension uses another color pattern :)
 | -----------|------------------| ------------------| -----------------| ------------------|
 | Anemometer | Black | Red  | Yellow | Green |
 | Leroy conector | Yellow | Green | Red | Black |
-| DuPont Wire soldered | Male-Male Brown | Male-Male Purple| Male-Female Yellow | Male-Female Green |
+| DuPont Wire soldered | Yellow Female | Green Female  | Purple Male | Brown Male |
 
 #### For Long Cable Run - Minimal Protection ####
 
