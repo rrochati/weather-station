@@ -90,7 +90,8 @@ def main():
     print_test_header()
     
     try:
-        logger.info("Initializing I2C...")
+        #logger.info("Initializing I2C...")
+        print("Initializing I2C...")
         i2c = busio.I2C(board.SCL, board.SDA)
         
         # Setup GPIO
@@ -100,7 +101,7 @@ def main():
         gpio_handle = lgpio.gpiochip_open(0)
         
         # Set pin as input with pull-up
-        lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN, lgpio.SET_PULL_UP)
+        lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN) #, lgpio.SET_PULL_UP)
         
         # Set up callback for falling edge
         callback = lgpio.callback(gpio_handle, ANEMO_PIN, lgpio.FALLING_EDGE, anemo_pulse_callback)
