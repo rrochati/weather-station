@@ -2,11 +2,7 @@
 import time
 import board
 import busio
-#import adafruit_ads1x15.ads1115 as ADS
-#from adafruit_ads1x15.analog_in import AnalogIn
-#import RPi.GPIO as GPIO
 import lgpio
-import csv
 from datetime import datetime
 
 # -------------------------------------------------
@@ -32,10 +28,6 @@ anemo_pulses = 0
 # Helper functions
 # -------------------------------------------------
 
-def anemo_callback(channel):
-    global anemo_pulses
-    anemo_pulses += 1
-
 def start_gpio():
     """Initialize GPIO"""
     global gpio_handle
@@ -55,13 +47,6 @@ def start_gpio():
     except Exception as e:
         print(f"❌ Error during GPIO test: {e}")
 
-    #try:
-    #    GPIO.setmode(GPIO.BCM)
-    #    GPIO.setup(ANEMO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-    #    GPIO.add_event_detect(ANEMO_PIN, GPIO.FALLING, callback=anemo_callback, bouncetime=10)
-    #    print(f"✅ GPIO{ANEMO_PIN} event detection set up")
-    #except Exception as e:
-    #    print(f"❌ Error during GPIO test: {e}")
 
 def measure_wind_speed(interval=5):
     global anemo_pulses
@@ -81,7 +66,7 @@ def measure_wind_speed(interval=5):
                 
         time.sleep(0.1)  # Check every 100ms
     
-    cps = anemo_pulses / interval
+    cps = changes / interval
     speed = cps * SPEED_CONV  # m/s
     return speed, cps
 
@@ -95,7 +80,7 @@ try:
     while True:
         
         # Measure wind
-        speed, cps = measure_wind_speed(5)
+        speed, cps = measure_wind_speed(30)
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         # Print summary
         print(f"Timestamp: {timestamp}")
