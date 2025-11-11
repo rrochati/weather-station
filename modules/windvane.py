@@ -54,13 +54,27 @@ def start_gpio():
 
 
 def measure_wind_speed(interval=5):
+    """
+    Measure wind speed by counting rising edges over a specified interval.
+    
+    Args:
+        interval (int): Number of seconds to measure (default 5)
+        
+    Returns:
+        tuple: (wind_speed_m_per_s, total_pulses_counted)
+    """
     global anemo_pulses
     anemo_pulses = 0
+    
+    # Get initial state
     last_level = lgpio.gpio_read(gpio_handle, ANEMO_PIN)
     pulses = 0
     start_time = time.time()
     
-    for i in range(interval):
+    logger.info(f"🌬️  Measuring wind for {interval} seconds...")
+    
+    # Monitor continuously for the specified interval
+    while (time.time() - start_time) < interval:
         current_level = lgpio.gpio_read(gpio_handle, ANEMO_PIN)
         
         # Count rising edge as one pulse (low to high transition)
@@ -70,8 +84,11 @@ def measure_wind_speed(interval=5):
             print(f"   [{timestamp}] Pulse #{pulses}: Rising edge detected")
             
         last_level = current_level
-        time.sleep(0.1)  # Check every 100ms
+        time.sleep(0.01)  # Check every 10ms for better accuracy
     
-    pulse_per_second = pulses / interval
-    speed = pulse_per_second * SPEED_CONV  # m/s
-    return speed, pulse_per_second
+    # Calculate results
+    wind_speed = (pulses / interval) * SPEED_CONV  # m/s
+    
+    logger.info(f"📊 Measurement complete: {pulses} pulses in {interval}s = {wind_speed:.2f} m/s")
+    
+    return wind_speed, pulses

@@ -20,11 +20,11 @@ try:
     while True:
         
         # Measure wind
-        speed, cps = measure_wind_speed(60)
+        speed, total_pulses = measure_wind_speed(60)
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         # Print summary
         print(f"Timestamp: {timestamp}")
-        print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {cps*5:.0f} in last interval")
+        print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
         print("-" * 30)
 
 except KeyboardInterrupt:
