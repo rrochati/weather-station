@@ -5,7 +5,7 @@ import busio
 import sys, os
 # Add the modules directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'modules'))
-from windvane import *
+from anemometer import *
 
 
 # -------------------------------------------------
@@ -18,13 +18,19 @@ try:
     start_gpio()
     print(f"Measuring wind speed at {time.strftime('%Y-%m-%d %H:%M:%S')}...")
     while True:
-        
+        interval = 60  # seconds
         # Measure wind
-        speed, total_pulses = measure_wind_speed(60)
+        speed, total_pulses = measure_wind_speed(interval)
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         # Print summary
         print(f"Timestamp: {timestamp}")
         print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
+        print(f"pulses: {total_pulses} pulses/second")
+        print(f"pulses: {total_pulses/interval} pulses/interval")
+        print(f"pulses in m/s: {total_pulses/0.6667} ")
+        print(f"pulses in km/h: {total_pulses/0.27778} ")
+        print(f"pulses in mph: {total_pulses/1.49129} ")
+        print(f"pulses in knots: {total_pulses/1.2959} ")
         print("-" * 30)
 
 except KeyboardInterrupt:

@@ -196,6 +196,41 @@ Capacitor: 100nF (0.1μF) ceramic capacitor
 3. Spin anemometer by hand and verify pulse counting
 ```
 
+### **Step 2: Outdoor Installation**
+```bash
+1. Mount anemometer outdoors
+2. Monitor data for 24-48 hours
+3. Check for reasonable wind speed values
+4. Look for electrical noise or interference
+```
+
+### **Step 3: Long Cable Test (TBD)**
+```bash
+1. Install long cable run
+2. Test pulse detection at various spin rates  
+3. Monitor for false pulses or missed pulses
+4. Add protection components if needed
+```
+## 💡 **Anemometer-Specific Tips:**
+
+
+From **Weather Meter Hookup Guide**:
+     "The wind moves the cups on the anemometer, which in turn, rotate a enclosed magnet. The magnet closes a reed switch on each rotation, which is reflected on the output. You can measure this on the two inner conductors of the RJ11 connector (pins 2 and 3), using a digital counter or interrupt pins on your microcontroller. To convert this into a functional wind speed, use the conversion of 1.492 mph = 1 switch closure/second. For those in metric land, this is 2.4 km/h."
+
+So to convert 2.4 km/h use the following table: 
+| Unit | Operation | Value |
+| ---- | --------- | ----- |
+| m/s | / | 0.6667 |
+| mph | TBD | 1.49129 |
+| knots | TBD| 1.2959 |
+
+And to convert back:
+| Unit  | Equivalent of 1 m/s |
+| ----- | ------------------- |
+| km/h  | 3.6                 |
+| mph   | 2.24                |
+| knots | 1.94                |
+
 
 
 ## 📚 References

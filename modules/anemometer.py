@@ -80,8 +80,8 @@ def measure_wind_speed(interval=5):
         # Count rising edge as one pulse (low to high transition)
         if current_level == 1 and last_level == 0:
             pulses += 1
-            timestamp = time.strftime("%H:%M:%S")
-            print(f"   [{timestamp}] Pulse #{pulses}: Rising edge detected")
+            #timestamp = time.strftime("%H:%M:%S")
+            #print(f"   [{timestamp}] Pulse #{pulses}: Rising edge detected")
             
         last_level = current_level
         time.sleep(0.001)  # Check every 1ms for better accuracy
