@@ -58,6 +58,14 @@ At Sensor End:
 - Keep connections weatherproof
 - Ensure good ground connection
 
+#### 🛠️ **Practical Implementation on a Breadboard:**
+- PI GPIIO 6 (pin 6) -> black wire -> GND Rail line 1 (alredy done for another module)
+- GND Rail line 14: Capacitor leg 2 (filters to ground)
+- Line 14 Row A: Capacitor leg 1 (filter input)
+- Pi Pin 11 (GPIO17) -> DuPont Orange -> Line 14 Row B (signal input)  
+- Wind Vane connertor Red -> RJ11 breakout Green wire -> Dupont Brown -> Line 14 Row C (signal source)
+- Wind Vane connertor Yellow -> RJ11 breakout Red wire -> Dupont Purple -> GND Rail line 11
+
 #### 🔍 What is "Bounce" in Switches? and why it's important for your anemometer setup ####
 
 When mechanical switches (like your anemometer's reed switch) open or close, they don't make a clean electrical connection. Instead, they "bounce" - making and breaking contact multiple times very quickly.
@@ -133,14 +141,43 @@ This means:
 - Perfect for mechanical switches!
 ```
 
-#### 🛠️ **Practical Implementation on a Breadboard:**
-- PI GPIIO 6 (pin 6) -> black wire -> GND Rail line 1 (alredy done for another module)
-- GND Rail line 14: Capacitor leg 2 (filters to ground)
-- Line 14 Row A: Capacitor leg 1 (filter input)
-- Pi Pin 11 (GPIO17) -> DuPont Orange -> Line 14 Row B (signal input)  
-- Wind Vane connertor Red -> RJ11 breakout Green wire -> Dupont Brown -> Line 14 Row C (signal source)
-- Wind Vane connertor Yellow -> RJ11 breakout Red wire -> Dupont Purple -> GND Rail line 11
+#### 📊 **Before vs After Results:**
 
+#### **Without Debounce Capacitor:**
+```bash
+Anemometer Test Results:
+- 1 manual spin → 3-7 pulses counted
+- Wind speed: Erratic, too high
+- Data: Noisy, unreliable
+```
+
+#### **With 100nF Debounce Capacitor:**
+```bash
+Anemometer Test Results:
+- 1 manual spin → 1 pulse counted  
+- Wind speed: Accurate, stable
+- Data: Clean, reliable
+```
+
+#### **Hardware + Software = Best Results:**
+```bash
+Hardware debounce (100nF): Smooths electrical bounce
+Software debounce (10ms):  Ignores rapid callbacks
+
+Combined: Nearly perfect pulse counting!
+```
+
+#### 🌬️ **Real-World Impact:**
+
+**Without proper debouncing:**
+- Calm day (5 km/h wind) might read as 20 km/h
+- Gusty conditions become unreadable
+- False storm warnings
+
+**With proper debouncing:**
+- Accurate wind measurements
+- Reliable weather data
+- Proper storm detection
 
 #### **Component Specs:**
 ```bash
@@ -150,7 +187,14 @@ Capacitor: 100nF (0.1μF) ceramic capacitor
 - Package: Through-hole or 0805 SMD
 - Cost: €0.05-0.10
 ```
+## 📊 **Testing Process:**
 
+### **Step 1: Bench Test (Short Cable)**
+```bash
+1. Connect Anemometer and Wind Vane, Wind Vane as describe in **Practical Implementation on a Breadboard:** step;
+2. Run scripts/anemometer_signal_test.py and scripts/gpio17_diagnostic.py
+3. Spin anemometer by hand and verify pulse counting
+```
 
 
 
