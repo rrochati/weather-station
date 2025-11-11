@@ -2,6 +2,7 @@
 import time
 import board
 import busio
+import sys, os
 # Add the modules directory to the Python path
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'modules'))
 from windvane import *

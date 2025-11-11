@@ -76,7 +76,7 @@ def measure_wind_speed(interval=5):
 try:
     print("Starting wind speed measurement... Press Ctrl+C to stop.")
     start_gpio()
-    print(f"Measuring wind speed at {time.now().strftime('%Y-%m-%d %H:%M:%S')}...")
+    print(f"Measuring wind speed at {time.strftime('%Y-%m-%d %H:%M:%S')}...")
     while True:
         
         # Measure wind
