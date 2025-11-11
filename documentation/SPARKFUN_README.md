@@ -14,39 +14,39 @@ As the wind vane setup is more complex, let's begin with anemometer.
 ## 🎯 **Anemometer-Only Setup (Minimal Start):**
 
 ### **What You Need:**
-```bash
-Hardware:
-- Just the anemometer from your SparkFun kit
-- Access to the green + black wires from RJ11
+
+### Hardware:
+- Anemometer and wind vane from your SparkFun kit
+- RJ11 breakout (I use on from Leroy Merlin) to access the wires
 - Long cable (your 10-20m run)
 
-Software:
-- Your existing weather_station.py already handles this!
-```
+
 
 ### **Simplified Wiring:**
-```bash
-Anemometer Only:
-Green wire (signal) ----[long cable]----> Pi Pin 11 (GPIO17)
-Black wire (ground) ----[long cable]----> Pi Pin 6 (GND)
-```
+- Anemometer RJ 11 ---> Wind Vane RJ11 female
+- Wind Vane RJ 11 ---> RJ11 breakout
+- Wind Vane RJ 11 Pin 2 (Red) ---> GPIO Pin 11 (GPIO17)
+- Wind Vane RJ 11 Pin 3 (Yellow) ---> GNd (breadboard - column row 11)
+
 
 #### Warning about wiring ####
 Watch closely your breakout connector for RJ11.
-The one I'm using (from Leroy Merlin) does not follow the color schema as the Sparckfun cable
-
-So, to get the Green wire from Anemometer I will use black wire on connector
-To get the Black wire from Anemometer I will use the yellow wire on connector
+The one I'm using (from Leroy Merlin) does not follow the color schema as the Sparkfun cable
 
 And, to add more complexibility, I will use different DuPont cable collors. Look for collors next to the anemometer on my cables
 
 PS: And the extension uses another color pattern :)
 
-| Front wiev | First connection | Second connection | Thrid connection | Fourth connection |
+| Front wiev | Pin 1 | Pin 2 | Pin 3 | Pin 4 |
 | -----------|------------------| ------------------| -----------------| ------------------|
 | Anemometer | Black | Red  | Yellow | Green |
 | Leroy conector | Yellow | Green | Red | Black |
 | DuPont Wire soldered | Yellow Female | Green Female  | Purple Male | Brown Male |
+
+So, using this RJ11 breakout:
+- Yellow on connector, dupont Purple ---> GNd (breadboard - column row 11)
+- Red on connector, dupont Green -> GPIO Pin 11 (GPIO17)
+
 
 #### For Long Cable Run - Minimal Protection ####
 
@@ -134,11 +134,12 @@ This means:
 ```
 
 #### 🛠️ **Practical Implementation on a Breadboard:**
-- PI GPIIO 6 (pin xx) -> black wire -> GND Rail line 1 (alredy done for another module)
+- PI GPIIO 6 (pin 6) -> black wire -> GND Rail line 1 (alredy done for another module)
 - GND Rail line 14: Capacitor leg 2 (filters to ground)
 - Line 14 Row A: Capacitor leg 1 (filter input)
-- Pi Pin 11 (GPIO17) -> green cable -> Line 14 Row B (signal input)  
-- Anemometer green wire -> green wire -> Line 14 Row C (signal source)
+- Pi Pin 11 (GPIO17) -> DuPont Orange -> Line 14 Row B (signal input)  
+- Wind Vane connertor Red -> RJ11 breakout Green wire -> Dupont Brown -> Line 14 Row C (signal source)
+- Wind Vane connertor Yellow -> RJ11 breakout Red wire -> Dupont Purple -> GND Rail line 11
 
 
 #### **Component Specs:**
