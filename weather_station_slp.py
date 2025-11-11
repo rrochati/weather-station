@@ -10,6 +10,7 @@ from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMis
 from modules.openweathermap import get_current_sea_level_pressure, get_air_quality, get_detailed_weather_data
 from modules.openweathermap import print_detailed_weather_data, print_air_quality
 from modules.database import WeatherDatabase
+from modules.anemometer import start_gpio, measure_wind_speed
 from datetime import datetime, timedelta
 
 LOG_FILE = os.getenv("LOG_FILE", "/home/rrocha/logs/weather_station.log")
@@ -120,7 +121,10 @@ class WeatherStationManager:
                 if self.bme280:
                     self.bme280.sea_level_pressure = self.current_slp
                 
-                ## Add save to database function here
+                success = db.insert_api_weather_data(
+                    timestamp=datetime.now(),
+                    weather_data=self.weather_data
+                )
                 
                 self.last_weather_update = datetime.now()
                 logger.info("Weather data updated successfully at %s", self.last_weather_update.strftime('%H:%M:%S'))
@@ -190,6 +194,9 @@ class WeatherStationManager:
         
         reading_count = 0
         
+        start_gpio()
+        wind_read_interval = 60  # seconds
+        
         while True:
             try:
                 # Update weather data if it's time
@@ -202,10 +209,14 @@ class WeatherStationManager:
                 pressure = self.bme280.pressure
                 altitude = self.bme280.altitude
                 
+                speed, total_pulses = measure_wind_speed(interval)
+                
                 reading_count += 1
                 
                 # Log sensor readings
                 logger.info(f"Reading #{reading_count}: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
+                print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
+                print(f"pulses: {total_pulses} pulses")
                 
                 # Save sensor data to database
                 timestamp = datetime.now().isoformat(timespec='seconds')
@@ -215,7 +226,8 @@ class WeatherStationManager:
                     humidity=humidity,
                     pressure=pressure,
                     altitude=altitude,
-                    sea_level_pressure=self.current_slp
+                    sea_level_pressure=self.current_slp,
+                    wind_speed=speed*1.944,  # Convert m/s to knots
                 )
                 
                 if not success:
