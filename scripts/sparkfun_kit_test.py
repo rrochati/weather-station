@@ -2,9 +2,8 @@
 import time
 import board
 import busio
-import adafruit_ads1x15.ads1115 as ADS
+#import adafruit_ads1x15.ads1115 as ADS
 from adafruit_ads1x15.analog_in import AnalogIn
-import adafruit_bme280
 import RPi.GPIO as GPIO
 import csv
 from datetime import datetime
@@ -28,10 +27,6 @@ i2c = busio.I2C(board.SCL, board.SDA)
 #ads = ADS.ADS1115(i2c)
 #ads.gain = 1  # ±4.096V
 #vane_channel = AnalogIn(ads, ADS.P0)
-
-# BME280 setup
-#bme280 = adafruit_bme280.Adafruit_BME280_I2C(i2c)
-#bme280.sea_level_pressure = 1013.25
 
 # -------------------------------------------------
 # Wind vane voltage→direction lookup (3.3V, 10k divider)
@@ -130,6 +125,3 @@ except KeyboardInterrupt:
     print("Stopping weather kit...")
 finally:
     GPIO.cleanup()
-
-```
-*(Script includes CSV logging, geolocation via ipinfo.io, BME280, ADS1115, wind speed/direction, and rainfall measurement.)*
