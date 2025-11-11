@@ -84,10 +84,10 @@ def measure_wind_speed(interval=5):
             print(f"   [{timestamp}] Pulse #{pulses}: Rising edge detected")
             
         last_level = current_level
-        time.sleep(0.01)  # Check every 10ms for better accuracy
-    
+        time.sleep(0.001)  # Check every 1ms for better accuracy
+
     # Calculate results
-    wind_speed = (pulses / interval) * SPEED_CONV  # m/s
+    wind_speed = (pulses / interval) / SPEED_CONV  # m/s
     
     logger.info(f"📊 Measurement complete: {pulses} pulses in {interval}s = {wind_speed:.2f} m/s")
     
