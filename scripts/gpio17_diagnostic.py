@@ -66,7 +66,7 @@ def test_gpio_basic():
         last_level = -1
         changes = 0
         
-        for i in range(60):  # Monitor for 60 seconds
+        for i in range(120):  # Monitor for 120 seconds
             current_level = lgpio.gpio_read(gpio_handle, ANEMO_PIN)
             
             if current_level != last_level:
