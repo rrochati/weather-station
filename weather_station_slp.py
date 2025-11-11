@@ -122,7 +122,7 @@ class WeatherStationManager:
                     self.bme280.sea_level_pressure = self.current_slp
                 
                 success = db.insert_api_weather_data(
-                    timestamp=datetime.now(),
+                    timestamp=datetime.now().isoformat(timespec='seconds'),
                     weather_data=self.weather_data
                 )
                 
@@ -209,7 +209,7 @@ class WeatherStationManager:
                 pressure = self.bme280.pressure
                 altitude = self.bme280.altitude
                 
-                speed, total_pulses = measure_wind_speed(interval)
+                speed, total_pulses = measure_wind_speed(wind_read_interval)
                 
                 reading_count += 1
                 
