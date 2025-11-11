@@ -46,7 +46,7 @@ def start_gpio():
         
         # Claim pin as input with pull-up
         lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN)
-        lgpieo.gpio_set_debounce_micros(gpio_handle, ANEMO_PIN, 10000)
+        lgpio.gpio_set_debounce_micros(gpio_handle, ANEMO_PIN, 10000)
         logger.info(f"✅ GPIO{ANEMO_PIN} claimed as input")
 
     except Exception as e:
@@ -60,7 +60,7 @@ def measure_wind_speed(interval=5):
     pulses = 0
     start_time = time.time()
     
-    for i in range(int(interval * 10)):  # Check every 100ms
+    for i in range(int):
         current_level = lgpio.gpio_read(gpio_handle, ANEMO_PIN)
         
         # Count rising edge as one pulse (low to high transition)
