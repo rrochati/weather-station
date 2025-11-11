@@ -27,10 +27,6 @@ try:
         print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
         print(f"pulses: {total_pulses} pulses/second")
         print(f"pulses: {total_pulses/interval} pulses/interval")
-        print(f"pulses in m/s: {total_pulses/0.6667} ")
-        print(f"pulses in km/h: {total_pulses/0.27778} ")
-        print(f"pulses in mph: {total_pulses/1.49129} ")
-        print(f"pulses in knots: {total_pulses/1.2959} ")
         print("-" * 30)
 
 except KeyboardInterrupt:

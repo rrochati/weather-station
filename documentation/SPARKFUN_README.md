@@ -213,7 +213,6 @@ Capacitor: 100nF (0.1μF) ceramic capacitor
 ```
 ## 💡 **Anemometer-Specific Tips:**
 
-
 From **Weather Meter Hookup Guide**:
      "The wind moves the cups on the anemometer, which in turn, rotate a enclosed magnet. The magnet closes a reed switch on each rotation, which is reflected on the output. You can measure this on the two inner conductors of the RJ11 connector (pins 2 and 3), using a digital counter or interrupt pins on your microcontroller. To convert this into a functional wind speed, use the conversion of 1.492 mph = 1 switch closure/second. For those in metric land, this is 2.4 km/h."
 
@@ -221,15 +220,16 @@ So to convert 2.4 km/h use the following table:
 | Unit | Operation | Value |
 | ---- | --------- | ----- |
 | m/s | / | 0.6667 |
+| km/h | TBD 0.27778 |
 | mph | TBD | 1.49129 |
 | knots | TBD| 1.2959 |
 
-And to convert back:
+And to convert back multiply to:
 | Unit  | Equivalent of 1 m/s |
 | ----- | ------------------- |
-| km/h  | 3.6                 |
-| mph   | 2.24                |
-| knots | 1.94                |
+| km/h  | 3.6 |
+| mph   | 2.237 |
+| knots | 1.944 |
 
 
 
