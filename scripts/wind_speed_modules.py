@@ -24,7 +24,7 @@ try:
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
         # Print summary
         print(f"Timestamp: {timestamp}")
-        print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h), {speed*2.237:.1f} mph), Pulses: {cps*5:.0f} in last 5s")
+        print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {cps*5:.0f} in last interval")
         print("-" * 30)
 
 except KeyboardInterrupt:
