@@ -54,11 +54,19 @@ def start_gpio():
     except Exception as e:
         print(f"❌ Error during GPIO test: {e}")
 
+    try:
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setup(ANEMO_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.add_event_detect(ANEMO_PIN, GPIO.FALLING, callback=anemo_callback, bouncetime=10)
+        print(f"✅ GPIO{ANEMO_PIN} event detection set up")
+    except Exception as e:
+        print(f"❌ Error during GPIO test: {e}")
+
 def measure_wind_speed(interval=5.0):
     global anemo_pulses
     anemo_pulses = 0
     time.sleep(interval)
-    lgpio.gpio_read(gpio_handle, ANEMO_PIN, bouncetime=10)
+    lgpio.gpio_read(gpio_handle, ANEMO_PIN)
     cps = anemo_pulses / interval
     speed = cps * SPEED_CONV  # m/s
     return speed, cps
@@ -69,6 +77,9 @@ def measure_wind_speed(interval=5.0):
 try:
     print("Starting wind speed measurement... Press Ctrl+C to stop.")
     while True:
+        start_gpio()
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        print(f"Measuring wind speed at {timestamp}...")
         # Measure wind
         speed, cps = measure_wind_speed(5)
 
