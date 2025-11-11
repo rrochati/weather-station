@@ -42,17 +42,17 @@ def start_gpio():
     
     print("🔧 Starting GPIO...")
     
-    try:
-        # Open GPIO chip
-        gpio_handle = lgpio.gpiochip_open(0)
-        print("✅ GPIO chip opened successfully")
+    #try:
+    #    # Open GPIO chip
+    #    gpio_handle = lgpio.gpiochip_open(0)
+    #    print("✅ GPIO chip opened successfully")
         
         # Claim pin as input with pull-up
-        lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN)
-        print(f"✅ GPIO{ANEMO_PIN} claimed as input")
+    #    lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN)
+    #    print(f"✅ GPIO{ANEMO_PIN} claimed as input")
 
-    except Exception as e:
-        print(f"❌ Error during GPIO test: {e}")
+    #except Exception as e:
+    #    print(f"❌ Error during GPIO test: {e}")
 
     try:
         GPIO.setmode(GPIO.BCM)
@@ -76,10 +76,10 @@ def measure_wind_speed(interval=5.0):
 # -------------------------------------------------
 try:
     print("Starting wind speed measurement... Press Ctrl+C to stop.")
+    start_gpio()
+    print(f"Measuring wind speed at {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}...")
     while True:
-        start_gpio()
-        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        print(f"Measuring wind speed at {timestamp}...")
+        
         # Measure wind
         speed, cps = measure_wind_speed(5)
 
