@@ -101,7 +101,7 @@ def main():
         gpio_handle = lgpio.gpiochip_open(0)
         
         # Set pin as input with pull-up
-        lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN) #, lgpio.SET_PULL_UP)
+        lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN, lgpio.SET_PULL_UP)
         
         # Set up callback for falling edge
         callback = lgpio.callback(gpio_handle, ANEMO_PIN, lgpio.FALLING_EDGE, anemo_pulse_callback)
