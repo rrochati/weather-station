@@ -126,6 +126,9 @@ class WeatherStationManager:
                     weather_data=self.weather_data
                 )
                 
+                if not success:
+                    logger.warning("Failed to save api reading to database")
+                
                 self.last_weather_update = datetime.now()
                 logger.info("Weather data updated successfully at %s", self.last_weather_update.strftime('%H:%M:%S'))
                 logger.info("%s", print_detailed_weather_data(self.weather_data))
@@ -215,8 +218,7 @@ class WeatherStationManager:
                 
                 # Log sensor readings
                 logger.info(f"Reading #{reading_count}: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
-                print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
-                print(f"pulses: {total_pulses} pulses")
+                logger.info(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
                 
                 # Save sensor data to database
                 timestamp = datetime.now().isoformat(timespec='seconds')
