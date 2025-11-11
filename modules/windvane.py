@@ -1,9 +1,19 @@
-#!/usr/bin/env python3
+import logging
 import time
 import board
 import busio
 import lgpio
-from datetime import datetime
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)  # This ensures output goes to stdout
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 # -------------------------------------------------
 # Configuration
@@ -16,36 +26,30 @@ gpio_handle = None
 # Conversion constants
 SPEED_CONV = 0.6667      # m/s per pulse/sec (SparkFun)
 
-# I2C setup
-i2c = busio.I2C(board.SCL, board.SDA)
-
 # -------------------------------------------------
 # Global counters
 # -------------------------------------------------
 anemo_pulses = 0
 
-# -------------------------------------------------
-# Helper functions
-# -------------------------------------------------
 
 def start_gpio():
     """Initialize GPIO"""
     global gpio_handle
     
-    print("🔧 Starting GPIO...")
+    logger.info("🔧 Starting GPIO...")
     
     try:
         # Open GPIO chip
         gpio_handle = lgpio.gpiochip_open(0)
-        print("✅ GPIO chip opened successfully")
+        logger.info("✅ GPIO chip opened successfully")
         
         # Claim pin as input with pull-up
         lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN)
         lgpio.gpio_set_debounce_micros(gpio_handle, ANEMO_PIN, 1000)
-        print(f"✅ GPIO{ANEMO_PIN} claimed as input")
+        logger.info(f"✅ GPIO{ANEMO_PIN} claimed as input")
 
     except Exception as e:
-        print(f"❌ Error during GPIO test: {e}")
+        logger.error(f"❌ Error during GPIO test: {e}")
 
 
 def measure_wind_speed(interval=5):
@@ -69,25 +73,3 @@ def measure_wind_speed(interval=5):
     cps = changes / interval
     speed = cps * SPEED_CONV  # m/s
     return speed, cps
-
-# -------------------------------------------------
-# Main loop
-# -------------------------------------------------
-try:
-    print("Starting wind speed measurement... Press Ctrl+C to stop.")
-    start_gpio()
-    print(f"Measuring wind speed at {time.now().strftime('%Y-%m-%d %H:%M:%S')}...")
-    while True:
-        
-        # Measure wind
-        speed, cps = measure_wind_speed(60)
-        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
-        # Print summary
-        print(f"Timestamp: {timestamp}")
-        print(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h), {speed*2.237:.1f} mph), Pulses: {cps*5:.0f} in last 5s")
-        print("-" * 30)
-
-except KeyboardInterrupt:
-    print("Stopping wind speed measurement...")
-finally:
-    GPIO.cleanup()
