@@ -60,7 +60,7 @@ def measure_wind_speed(interval=5):
     pulses = 0
     start_time = time.time()
     
-    for i in range(int):
+    for i in range(interval):
         current_level = lgpio.gpio_read(gpio_handle, ANEMO_PIN)
         
         # Count rising edge as one pulse (low to high transition)
