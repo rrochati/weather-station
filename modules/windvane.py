@@ -25,7 +25,7 @@ ANEMO_PIN = 17       # Anemometer reed switch
 gpio_handle = None
 
 # Conversion constants
-SPEED_CONV = 0.6667      # m/s per pulse/sec (SparkFun)
+SPEED_CONV = 0.6667      # m/s per pulse/second (SparkFun spec: 1.492 mph = 2.4 km/h = 1 switch closure/second)
 
 # -------------------------------------------------
 # Global counters
@@ -56,21 +56,22 @@ def start_gpio():
 def measure_wind_speed(interval=5):
     global anemo_pulses
     anemo_pulses = 0
-    last_level = 0
-    changes = 0
+    last_level = lgpio.gpio_read(gpio_handle, ANEMO_PIN)
+    pulses = 0
     start_time = time.time()
     
-    for i in range(int(interval)):
+    for i in range(int(interval * 10)):  # Check every 100ms
         current_level = lgpio.gpio_read(gpio_handle, ANEMO_PIN)
-                
-        if current_level != last_level:
-            changes += 1
+        
+        # Count rising edge as one pulse (low to high transition)
+        if current_level == 1 and last_level == 0:
+            pulses += 1
             timestamp = time.strftime("%H:%M:%S")
-            print(f"   [{timestamp}] Change #{changes}: {last_level} → {current_level}")
-            last_level = current_level
-                
+            print(f"   [{timestamp}] Pulse #{pulses}: Rising edge detected")
+            
+        last_level = current_level
         time.sleep(0.1)  # Check every 100ms
     
-    cps = changes / interval
-    speed = cps * SPEED_CONV  # m/s
-    return speed, cps
+    pulse_per_second = pulses / interval
+    speed = pulse_per_second * SPEED_CONV  # m/s
+    return speed, pulse_per_second
