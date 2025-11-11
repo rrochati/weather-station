@@ -16,7 +16,7 @@ try:
     # I2C setup
     i2c = busio.I2C(board.SCL, board.SDA)
     start_gpio()
-    print(f"Measuring wind speed at {time.now().strftime('%Y-%m-%d %H:%M:%S')}...")
+    print(f"Measuring wind speed at {time.strftime('%Y-%m-%d %H:%M:%S')}...")
     while True:
         
         # Measure wind

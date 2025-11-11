@@ -3,6 +3,7 @@ import time
 import board
 import busio
 import lgpio
+import sys 
 
 # Configure logging
 logging.basicConfig(
@@ -45,7 +46,7 @@ def start_gpio():
         
         # Claim pin as input with pull-up
         lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN)
-        lgpio.gpio_set_debounce_micros(gpio_handle, ANEMO_PIN, 1000)
+        lgpieo.gpio_set_debounce_micros(gpio_handle, ANEMO_PIN, 10000)
         logger.info(f"✅ GPIO{ANEMO_PIN} claimed as input")
 
     except Exception as e:
