@@ -5,15 +5,17 @@ import busio
 import lgpio
 import sys 
 
-# Configure logging
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/jarvis/jarvis.log')
+
+# Enable logging
 logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(sys.stdout)  # This ensures output goes to stdout
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
     ]
 )
-
 logger = logging.getLogger(__name__)
 
 # -------------------------------------------------

@@ -5,9 +5,20 @@ from typing import Optional, List, Dict, Any
 import os
 import sys
 
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/jarvis/jarvis.log')
+
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+    handlers=[
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
+    ]
+)
 logger = logging.getLogger(__name__)
 
-DB_FILE = LOG_FILE = os.getenv("DB_FILE", "/home/rrocha/data/weather_data.db")
+DB_FILE = os.getenv("DB_FILE", "/home/rrocha/data/weather_data.db")
 
 class WeatherDatabase:
     def __init__(self, db_path: str = DB_FILE):

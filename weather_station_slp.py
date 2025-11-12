@@ -1,9 +1,7 @@
 import time
-import csv
 from datetime import datetime, timedelta
 import logging
-import sys
-import os
+import sys, os
 import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]
@@ -11,20 +9,16 @@ from modules.openweathermap import get_current_sea_level_pressure, get_air_quali
 from modules.openweathermap import print_detailed_weather_data, print_air_quality
 from modules.database import WeatherDatabase
 from modules.anemometer import start_gpio, measure_wind_speed
-from datetime import datetime, timedelta
 
-# Configure logging
-LOG_FILE = os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
-# Create log directory if it doesn't exist
-log_dir = os.path.dirname(LOG_FILE)
-os.makedirs(log_dir, exist_ok=True)
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/jarvis/jarvis.log')
 
+# Enable logging
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO,
     handlers=[
         logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
-        logging.FileHandler(LOG_FILE, mode='a', delay=False) # Send logs to file
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
     ]
 )
 logger = logging.getLogger(__name__)
