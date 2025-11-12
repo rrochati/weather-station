@@ -17,7 +17,7 @@ import board
 import busio
 try:
     # Try newer CircuitPython library first
-    import adafruit_ads1x15.ads1115 as ADS
+    from adafruit_ads1x15.ads1115 import ADS1115
     from adafruit_ads1x15.analog_in import AnalogIn
     USE_CIRCUITPYTHON = True
 except ImportError:
@@ -71,15 +71,15 @@ def setup_ads1115():
             i2c = busio.I2C(board.SCL, board.SDA)
             
             # ADS1115 setup
-            ads = ADS.ADS1115(i2c)
+            ads = ADS1115(i2c)
             ads.gain = 1  # ±4.096V range (suitable for 3.3V system)
             
-            # Wind vane on A0
-            wind_vane = AnalogIn(ads, ADS.P0)
+            # Wind vane on A0 (channel 0)
+            wind_vane = AnalogIn(ads, 0)  # Channel 0 = A0
             
             print("✅ ADS1115 initialized successfully (CircuitPython)")
             print(f"✅ Wind vane connected to A0")
-            print(f"✅ Voltage range: ±{ads.reference_voltage:.3f}V")
+            print(f"✅ Voltage range: ±4.096V")
             
         else:
             # Older library setup
