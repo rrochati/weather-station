@@ -1,4 +1,5 @@
 import logging
+import os
 import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]

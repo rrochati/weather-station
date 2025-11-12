@@ -3,7 +3,7 @@ import time
 import board
 import busio
 import lgpio
-import sys 
+import sys, os
 
 LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
