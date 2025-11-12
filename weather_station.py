@@ -37,11 +37,11 @@ print(f"LONG: {LONGITUDE}")
 print(f"KEY: {API_KEY}")
 
 # Initialize database
-logger.info("Initializing database...")
+logger.info(f"Initializing database...")
 db = WeatherDatabase()
 
 # Get current conditions from API
-logger.info("Fetching current weather conditions from OpenWeatherMap...")
+logger.info(f"Fetching current weather conditions from OpenWeatherMap...")
 
 #current_slp = get_current_sea_level_pressure(API_KEY, LATITUDE, LONGITUDE)
 try:
