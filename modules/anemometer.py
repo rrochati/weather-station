@@ -73,7 +73,7 @@ def measure_wind_speed(interval=5):
     pulses = 0
     start_time = time.time()
     
-    logger.info(f"🌬️  Measuring wind for {interval} seconds...")
+    #logger.info(f"Measuring wind for {interval} seconds...")
     
     # Monitor continuously for the specified interval
     while (time.time() - start_time) < interval:
@@ -91,6 +91,6 @@ def measure_wind_speed(interval=5):
     # Calculate results
     wind_speed = (pulses / interval) / SPEED_CONV  # m/s
     
-    logger.info(f"📊 Measurement complete: {pulses} pulses in {interval}s = {wind_speed:.2f} m/s")
+    logger.info(f"wind Measurement complete: {pulses} pulses in {interval}s = {wind_speed:.2f} m/s")
     
     return wind_speed, pulses
