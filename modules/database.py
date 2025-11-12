@@ -185,7 +185,7 @@ class WeatherDatabase:
                     air_quality_data.get('pm10')
                 ))
                 conn.commit()
-                logger.info("Air quality data saved")
+                logger.info("Air Quality data saved to DB successfully.")
                 return True
         except sqlite3.Error as e:
             logger.error(f"Error inserting air quality data: {e}")

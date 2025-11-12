@@ -13,9 +13,8 @@ from modules.database import WeatherDatabase
 from modules.anemometer import start_gpio, measure_wind_speed
 from datetime import datetime, timedelta
 
-
 # Configure logging
-LOG_FILE = os.getenv("LOG_FILE", "/home/rrocha/logs/weather_station.log")
+LOG_FILE = os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 # Create log directory if it doesn't exist
 log_dir = os.path.dirname(LOG_FILE)
 os.makedirs(log_dir, exist_ok=True)
@@ -139,7 +138,7 @@ class WeatherStationManager:
                 
                 self.last_weather_update = datetime.now()
                 logger.info("Weather data updated successfully at %s", self.last_weather_update.strftime('%H:%M:%S'))
-                logger.info("%s", print_detailed_weather_data(self.weather_data))
+                #logger.info("%s", print_detailed_weather_data(self.weather_data))
                 
                 # Log next update time
                 time_until_next, next_update_time = self.get_time_until_next_update()
@@ -159,19 +158,14 @@ class WeatherStationManager:
             air_quality = get_air_quality(API_KEY, LATITUDE, LONGITUDE)
             
             if air_quality:
-                logger.info("=== INITIAL AIR QUALITY DATA ===")
-                logger.info("Air Quality Index: %s", air_quality['air_quality_index'])
-                logger.info("CO: %s μg/m³", air_quality['co'])
-                logger.info("NO2: %s μg/m³", air_quality['no2'])
-                logger.info("O3: %s μg/m³", air_quality['o3'])
-                logger.info("PM2.5: %s μg/m³", air_quality['pm2_5'])
-                logger.info("PM10: %s μg/m³", air_quality['pm10'])
-                logger.info("================================")
-                
-                self.db.insert_air_quality_data(
-                    timestamp=datetime.now().isoformat(timespec='seconds'),
-                    air_quality_data=air_quality
-                )
+                try:
+                    self.db.insert_air_quality_data(
+                        timestamp=datetime.now().isoformat(timespec='seconds'),
+                        air_quality_data=air_quality
+                    )
+
+                except Exception as e:
+                    logger.error("Error inserting air quality data into database: %s", e)
             else:
                 logger.warning("Could not fetch air quality data")
                 
