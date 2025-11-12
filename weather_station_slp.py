@@ -24,7 +24,7 @@ logging.basicConfig(
     level=logging.INFO,
     handlers=[
         logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
-        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
+        logging.FileHandler(LOG_FILE, mode='a', delay=False) # Send logs to file
     ]
 )
 logger = logging.getLogger(__name__)
