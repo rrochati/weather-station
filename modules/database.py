@@ -104,8 +104,7 @@ class WeatherDatabase:
         wind_speed: Optional[float] = None,
         wind_direction: Optional[float] = None,
         wind_vane_voltage: Optional[float] = None,
-        rain_interval: Optional[float] = None
-    ) -> bool:
+        rain_interval: Optional[float] = None ) -> bool:
         """Insert a weather reading into the database."""
         try:
             with sqlite3.connect(self.db_path) as conn:

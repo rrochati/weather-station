@@ -15,6 +15,10 @@ from datetime import datetime, timedelta
 
 LOG_FILE = os.getenv("LOG_FILE", "/home/rrocha/logs/weather_station.log")
 
+# Create log directory if it doesn't exist
+log_dir = os.path.dirname(LOG_FILE)
+os.makedirs(log_dir, exist_ok=True)
+
 LATITUDE = os.getenv("LATITUDE", "38.683822")  # Replace with your LATITUDE
 LONGITUDE = os.getenv("LONGITUDE", "-9.149931")  # Replace with your LONGITUDE
 API_KEY = os.getenv("API_KEY", "none")  # API key from OpenWeatherMap
@@ -23,13 +27,20 @@ WEATHER_UPDATE_INTERVAL_HOURS = 2  # Update weather data every 2 hours
 SENSOR_READ_INTERVAL_MINUTES = 1   # Read BME280 every minute
 
 # Configure logging
+handlers = [logging.StreamHandler(sys.stdout)]  # This ensures output goes to stdout
+
+try:
+    # Try to add file handler, but continue if it fails
+    handlers.append(logging.FileHandler(LOG_FILE, mode='a'))
+    print(f"Logging to file: {LOG_FILE}")
+except (PermissionError, OSError) as e:
+    print(f"Warning: Could not create log file {LOG_FILE}: {e}")
+    print("Continuing with console logging only.")
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
-        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
-    ]
+    handlers=handlers
 )
 
 logger = logging.getLogger(__name__)
@@ -159,6 +170,11 @@ class WeatherStationManager:
                 logger.info("PM2.5: %s μg/m³", air_quality['pm2_5'])
                 logger.info("PM10: %s μg/m³", air_quality['pm10'])
                 logger.info("================================")
+                
+                db.insert_air_quality_data(
+                    timestamp=datetime.now().isoformat(timespec='seconds'),
+                    air_quality=air_quality
+                )
             else:
                 logger.warning("Could not fetch air quality data")
                 
