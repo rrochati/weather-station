@@ -1,17 +1,20 @@
 import logging
+import os
 import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]
 
-# Configure logging
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
+
+# Enable logging
 logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(sys.stdout)  # This ensures output goes to stdout
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
     ]
 )
-
 logger = logging.getLogger(__name__)
 
 # Initialize I2C bus and BME280 sensor

@@ -1,8 +1,19 @@
 import time
-import sys
+import sys, os
 import logging
 import requests
 
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
+
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+    handlers=[
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
+    ]
+)
 logger = logging.getLogger(__name__)
 
 def get_current_sea_level_pressure(api_key, lat, lon):

@@ -3,17 +3,19 @@ import time
 import board
 import busio
 import lgpio
-import sys 
+import sys, os
 
-# Configure logging
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
+
+# Enable logging
 logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.StreamHandler(sys.stdout)  # This ensures output goes to stdout
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
     ]
 )
-
 logger = logging.getLogger(__name__)
 
 # -------------------------------------------------
@@ -71,7 +73,7 @@ def measure_wind_speed(interval=5):
     pulses = 0
     start_time = time.time()
     
-    logger.info(f"🌬️  Measuring wind for {interval} seconds...")
+    #logger.info(f"Measuring wind for {interval} seconds...")
     
     # Monitor continuously for the specified interval
     while (time.time() - start_time) < interval:
@@ -89,6 +91,6 @@ def measure_wind_speed(interval=5):
     # Calculate results
     wind_speed = (pulses / interval) / SPEED_CONV  # m/s
     
-    logger.info(f"📊 Measurement complete: {pulses} pulses in {interval}s = {wind_speed:.2f} m/s")
+    logger.info(f"wind Measurement complete: {pulses} pulses in {interval}s = {wind_speed:.2f} m/s")
     
     return wind_speed, pulses

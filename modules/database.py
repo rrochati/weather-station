@@ -5,9 +5,20 @@ from typing import Optional, List, Dict, Any
 import os
 import sys
 
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
+
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+    handlers=[
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
+    ]
+)
 logger = logging.getLogger(__name__)
 
-DB_FILE = LOG_FILE = os.getenv("DB_FILE", "/home/rrocha/data/weather_data.db")
+DB_FILE = os.getenv("DB_FILE", "/home/rrocha/data/weather_data.db")
 
 class WeatherDatabase:
     def __init__(self, db_path: str = DB_FILE):
@@ -104,8 +115,7 @@ class WeatherDatabase:
         wind_speed: Optional[float] = None,
         wind_direction: Optional[float] = None,
         wind_vane_voltage: Optional[float] = None,
-        rain_interval: Optional[float] = None
-    ) -> bool:
+        rain_interval: Optional[float] = None ) -> bool:
         """Insert a weather reading into the database."""
         try:
             with sqlite3.connect(self.db_path) as conn:
@@ -120,7 +130,7 @@ class WeatherDatabase:
                       wind_speed, wind_direction, wind_vane_voltage, rain_interval,
                       sea_level_pressure))
                 conn.commit()
-                logger.info(f"Weather reading saved: T={temperature:.1f}°C, H={humidity:.1f}%, P={pressure:.1f}hPa, SLP={sea_level_pressure:.1f}hPa, Alt={altitude:.1f}m")
+                logger.info(f"Weather reading saved: T={temperature:.1f}°C, H={humidity:.1f}%, P={pressure:.1f}hPa, SLP={sea_level_pressure:.1f}hPa, Alt={altitude:.1f}m, Wind={wind_speed}knots, Dir={wind_direction}°")
                 return True
         except sqlite3.Error as e:
             logger.error(f"Error inserting weather reading: {e}")
@@ -186,7 +196,7 @@ class WeatherDatabase:
                     air_quality_data.get('pm10')
                 ))
                 conn.commit()
-                logger.info("Air quality data saved")
+                logger.info("Air Quality data saved to DB successfully.")
                 return True
         except sqlite3.Error as e:
             logger.error(f"Error inserting air quality data: {e}")

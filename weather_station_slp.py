@@ -1,18 +1,28 @@
 import time
-import csv
 from datetime import datetime, timedelta
 import logging
-import sys
-import os
+import sys, os
 import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]
 from modules.openweathermap import get_current_sea_level_pressure, get_air_quality, get_detailed_weather_data
 from modules.openweathermap import print_detailed_weather_data, print_air_quality
 from modules.database import WeatherDatabase
-from datetime import datetime, timedelta
+from modules.anemometer import start_gpio, measure_wind_speed
 
-LOG_FILE = os.getenv("LOG_FILE", "/home/rrocha/logs/weather_station.log")
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
+
+# Enable logging
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+    handlers=[
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
+    ]
+)
+logger = logging.getLogger(__name__)
+
 
 LATITUDE = os.getenv("LATITUDE", "38.683822")  # Replace with your LATITUDE
 LONGITUDE = os.getenv("LONGITUDE", "-9.149931")  # Replace with your LONGITUDE
@@ -20,18 +30,6 @@ API_KEY = os.getenv("API_KEY", "none")  # API key from OpenWeatherMap
 
 WEATHER_UPDATE_INTERVAL_HOURS = 2  # Update weather data every 2 hours
 SENSOR_READ_INTERVAL_MINUTES = 1   # Read BME280 every minute
-
-# Configure logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
-        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
-    ]
-)
-
-logger = logging.getLogger(__name__)
 
 class WeatherStationManager:
     def __init__(self):
@@ -41,6 +39,10 @@ class WeatherStationManager:
         self.weather_data = None
         # Define fixed update times (hours in 24h format)
         self.update_hours = [0, 6, 12, 18]  # 00:00, 06:00, 12:00, 18:00
+        
+        # Initialize database
+        logger.info("Initializing database...")
+        self.db = WeatherDatabase()
         
     def get_next_update_time(self):
         """Calculate the next scheduled update time"""
@@ -120,11 +122,17 @@ class WeatherStationManager:
                 if self.bme280:
                     self.bme280.sea_level_pressure = self.current_slp
                 
-                ## Add save to database function here
+                success = self.db.insert_api_weather_data(
+                    timestamp=datetime.now().isoformat(timespec='seconds'),
+                    weather_data=self.weather_data
+                )
+                
+                if not success:
+                    logger.warning("Failed to save api reading to database")
                 
                 self.last_weather_update = datetime.now()
                 logger.info("Weather data updated successfully at %s", self.last_weather_update.strftime('%H:%M:%S'))
-                logger.info("%s", print_detailed_weather_data(self.weather_data))
+                #logger.info("%s", print_detailed_weather_data(self.weather_data))
                 
                 # Log next update time
                 time_until_next, next_update_time = self.get_time_until_next_update()
@@ -144,14 +152,14 @@ class WeatherStationManager:
             air_quality = get_air_quality(API_KEY, LATITUDE, LONGITUDE)
             
             if air_quality:
-                logger.info("=== INITIAL AIR QUALITY DATA ===")
-                logger.info("Air Quality Index: %s", air_quality['air_quality_index'])
-                logger.info("CO: %s μg/m³", air_quality['co'])
-                logger.info("NO2: %s μg/m³", air_quality['no2'])
-                logger.info("O3: %s μg/m³", air_quality['o3'])
-                logger.info("PM2.5: %s μg/m³", air_quality['pm2_5'])
-                logger.info("PM10: %s μg/m³", air_quality['pm10'])
-                logger.info("================================")
+                try:
+                    self.db.insert_air_quality_data(
+                        timestamp=datetime.now().isoformat(timespec='seconds'),
+                        air_quality_data=air_quality
+                    )
+
+                except Exception as e:
+                    logger.error("Error inserting air quality data into database: %s", e)
             else:
                 logger.warning("Could not fetch air quality data")
                 
@@ -165,12 +173,8 @@ class WeatherStationManager:
             logger.fatal("Failed to initialize sensor. Exiting.")
             return
         
-        # Initialize database
-        logger.info("Initializing database...")
-        db = WeatherDatabase()
-
         # Print database stats
-        stats = db.get_database_stats()
+        stats = self.db.get_database_stats()
         logger.info("Database stats: %s", stats)
         
         # Log initial air quality (only once at startup)
@@ -190,6 +194,9 @@ class WeatherStationManager:
         
         reading_count = 0
         
+        start_gpio()
+        wind_read_interval = 60  # seconds
+        
         while True:
             try:
                 # Update weather data if it's time
@@ -202,20 +209,24 @@ class WeatherStationManager:
                 pressure = self.bme280.pressure
                 altitude = self.bme280.altitude
                 
+                speed, total_pulses = measure_wind_speed(wind_read_interval)
+                
                 reading_count += 1
                 
                 # Log sensor readings
                 logger.info(f"Reading #{reading_count}: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
+                logger.info(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
                 
                 # Save sensor data to database
                 timestamp = datetime.now().isoformat(timespec='seconds')
-                success = db.insert_weather_reading(
+                success = self.db.insert_weather_reading(
                     timestamp=timestamp,
                     temperature=temperature,
                     humidity=humidity,
                     pressure=pressure,
                     altitude=altitude,
-                    sea_level_pressure=self.current_slp
+                    sea_level_pressure=self.current_slp,
+                    wind_speed=speed*1.944,  # Convert m/s to knots
                 )
                 
                 if not success:
