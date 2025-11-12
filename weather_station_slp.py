@@ -177,7 +177,7 @@ class WeatherStationManager:
                 
                 self.db.insert_air_quality_data(
                     timestamp=datetime.now().isoformat(timespec='seconds'),
-                    air_quality=air_quality
+                    air_quality_data=air_quality
                 )
             else:
                 logger.warning("Could not fetch air quality data")
