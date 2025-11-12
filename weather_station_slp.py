@@ -13,11 +13,23 @@ from modules.database import WeatherDatabase
 from modules.anemometer import start_gpio, measure_wind_speed
 from datetime import datetime, timedelta
 
-LOG_FILE = os.getenv("LOG_FILE", "/home/rrocha/logs/weather_station.log")
 
+# Configure logging
+LOG_FILE = os.getenv("LOG_FILE", "/home/rrocha/logs/weather_station.log")
 # Create log directory if it doesn't exist
 log_dir = os.path.dirname(LOG_FILE)
 os.makedirs(log_dir, exist_ok=True)
+
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.INFO,
+    handlers=[
+        logging.StreamHandler(sys.stdout),  # This ensures output goes to stdout
+        logging.FileHandler(LOG_FILE, mode='a') # Send logs to file
+    ]
+)
+logger = logging.getLogger(__name__)
+
 
 LATITUDE = os.getenv("LATITUDE", "38.683822")  # Replace with your LATITUDE
 LONGITUDE = os.getenv("LONGITUDE", "-9.149931")  # Replace with your LONGITUDE
@@ -25,25 +37,6 @@ API_KEY = os.getenv("API_KEY", "none")  # API key from OpenWeatherMap
 
 WEATHER_UPDATE_INTERVAL_HOURS = 2  # Update weather data every 2 hours
 SENSOR_READ_INTERVAL_MINUTES = 1   # Read BME280 every minute
-
-# Configure logging
-handlers = [logging.StreamHandler(sys.stdout)]  # This ensures output goes to stdout
-
-try:
-    # Try to add file handler, but continue if it fails
-    handlers.append(logging.FileHandler(LOG_FILE, mode='a'))
-    print(f"Logging to file: {LOG_FILE}")
-except (PermissionError, OSError) as e:
-    print(f"Warning: Could not create log file {LOG_FILE}: {e}")
-    print("Continuing with console logging only.")
-
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
-    handlers=handlers
-)
-
-logger = logging.getLogger(__name__)
 
 class WeatherStationManager:
     def __init__(self):
