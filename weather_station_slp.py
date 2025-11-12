@@ -54,6 +54,10 @@ class WeatherStationManager:
         # Define fixed update times (hours in 24h format)
         self.update_hours = [0, 6, 12, 18]  # 00:00, 06:00, 12:00, 18:00
         
+        # Initialize database
+        logger.info("Initializing database...")
+        self.db = WeatherDatabase()
+        
     def get_next_update_time(self):
         """Calculate the next scheduled update time"""
         now = datetime.now()
@@ -132,7 +136,7 @@ class WeatherStationManager:
                 if self.bme280:
                     self.bme280.sea_level_pressure = self.current_slp
                 
-                success = db.insert_api_weather_data(
+                success = self.db.insert_api_weather_data(
                     timestamp=datetime.now().isoformat(timespec='seconds'),
                     weather_data=self.weather_data
                 )
@@ -171,7 +175,7 @@ class WeatherStationManager:
                 logger.info("PM10: %s μg/m³", air_quality['pm10'])
                 logger.info("================================")
                 
-                db.insert_air_quality_data(
+                self.db.insert_air_quality_data(
                     timestamp=datetime.now().isoformat(timespec='seconds'),
                     air_quality=air_quality
                 )
@@ -188,12 +192,8 @@ class WeatherStationManager:
             logger.fatal("Failed to initialize sensor. Exiting.")
             return
         
-        # Initialize database
-        logger.info("Initializing database...")
-        db = WeatherDatabase()
-
         # Print database stats
-        stats = db.get_database_stats()
+        stats = self.db.get_database_stats()
         logger.info("Database stats: %s", stats)
         
         # Log initial air quality (only once at startup)
@@ -238,7 +238,7 @@ class WeatherStationManager:
                 
                 # Save sensor data to database
                 timestamp = datetime.now().isoformat(timespec='seconds')
-                success = db.insert_weather_reading(
+                success = self.db.insert_weather_reading(
                     timestamp=timestamp,
                     temperature=temperature,
                     humidity=humidity,
