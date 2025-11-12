@@ -130,7 +130,7 @@ class WeatherDatabase:
                       wind_speed, wind_direction, wind_vane_voltage, rain_interval,
                       sea_level_pressure))
                 conn.commit()
-                logger.info(f"Weather reading saved: T={temperature:.1f}°C, H={humidity:.1f}%, P={pressure:.1f}hPa, SLP={sea_level_pressure:.1f}hPa, Alt={altitude:.1f}m, Wind={wind_speed}knots, Dir={wind_direction}°")
+                logger.info(f"Weather reading saved: T={temperature:.1f}°C, H={humidity:.1f}%, P={pressure:.1f}hPa, SLP={sea_level_pressure:.1f}hPa, Alt={altitude:.1f}m, Wind Speed={wind_speed:.1f} knots, Wind Dir={wind_direction} °")
                 return True
         except sqlite3.Error as e:
             logger.error(f"Error inserting weather reading: {e}")

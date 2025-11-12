@@ -1,4 +1,4 @@
-# Weather Meter Kit setup
+# SparkFun Weather Meter Kit Anemometer Setup
 
 ## 🧩 Kit Overview
 
@@ -21,7 +21,6 @@ As the wind vane setup is more complex, let's begin with anemometer.
 - Long cable (your 10-20m run)
 
 
-
 ### **Simplified Wiring:**
 - Anemometer RJ 11 ---> Wind Vane RJ11 female
 - Wind Vane RJ 11 ---> RJ11 breakout
@@ -37,14 +36,15 @@ And, to add more complexibility, I will use different DuPont cable collors. Look
 
 PS: And the extension uses another color pattern :)
 
-| Front wiev | Pin 1 | Pin 2 | Pin 3 | Pin 4 |
-| -----------|------------------| ------------------| -----------------| ------------------|
-| Anemometer | Black | Red  | Yellow | Green |
-| Leroy conector | Yellow | Green | Red | Black |
-| DuPont Wire soldered | Yellow Female | Green Female  | Purple Male | Brown Male |
+    | RJ11 Pin| Wire Color | Function                | Connection                     | Leroy conector | DuPont Wire soldered |
+    |---------|------------|-------------------------| ------------------------------ | -------------- | -------------------- |
+    | Pin 1	  | Black      | VCC (Power)             | Connect to 3.3V                | Yellow         | Yellow Female        |
+    | Pin 2	  | Red        | Wind Speed (Anemometer) | Connect to Pi Pin 11 (GPIO 17) | Green          | Green Female         |
+    | Pin 3	  | Yellow     | Ground                  | Connect to GND                 | Red            | Purple Male          |
+    | Pin 4	  | Green	   | Wind Vane Signal        | Connect to DFR0553 A0          | Black          | Brown Male           |
 
 So, using this RJ11 breakout:
-- Yellow on connector, dupont Purple ---> GNd (breadboard - column row 11)
+- Yellow on connector, dupont Purple ---> GND (breadboard - column row 11)
 - Red on connector, dupont Green -> GPIO Pin 11 (GPIO17)
 
 
@@ -67,126 +67,8 @@ At Sensor End:
 - Wind Vane connertor Yellow -> RJ11 breakout Red wire -> Dupont Purple -> GND Rail line 11
 
 #### 🔍 What is "Bounce" in Switches? and why it's important for your anemometer setup ####
+- If you are interested on details, check **ANEMOMETER_DETAILS.md**
 
-When mechanical switches (like your anemometer's reed switch) open or close, they don't make a clean electrical connection. Instead, they "bounce" - making and breaking contact multiple times very quickly.
-
-#### **Visual Example:**
-```bash
-What you expect from 1 anemometer pulse:
-     3.3V ____          ____
-              |        |
-     0V       |________|
-
-What actually happens (bounce):
-     3.3V ____    _ _   ____
-              |  | | | |
-     0V       |__| |_|_|
-
-Result: Pi sees 4-5 pulses instead of 1!
-```
-
-#### 🌪️ **Why This Matters for Your Anemometer:**
-
-```bash
-Real scenario:
-- Anemometer spins once = should be 1 pulse
-- Reed switch bounces = Pi counts 3-5 pulses  
-- Wind speed calculation becomes 3-5x too high!
-
-Example:
-- Actual wind: 10 km/h
-- With bounce: reads as 30-50 km/h
-```
-
-#### **Solution - Hardware Debouncing:**
-The **100nF capacitor** acts as a **low-pass filter** that smooths out the rapid bounces:
-
-```bash
-Without Capacitor (bouncy):
-GPIO17: _____|‾|_|‾|_|‾‾‾‾‾
-
-With 100nF Capacitor (smooth):
-GPIO17: _____|‾‾‾‾‾‾‾‾‾‾‾‾‾
-               ^
-         Clean single pulse!
-```
-
-#### ⚡ **How the 100nF Capacitor Works:**
-
-##### **Circuit:**
-```bash
-                 Anemometer Reed Switch
-3.3V ----[pullup]----+---------> GPIO17
-                      |
-                   [100nF]
-                      |
-                     GND
-
-When switch closes:
-- Capacitor charges slowly through pullup resistor
-- Prevents rapid voltage changes
-- Creates smooth transition
-```
-
-#### **Technical Details:**
-```bash
-RC Time Constant:
-- R = 10kΩ (pullup resistor)  
-- C = 100nF (debounce capacitor)
-- τ = R × C = 10kΩ × 100nF = 1ms
-
-This means:
-- Bounces faster than ~1ms are filtered out
-- Real pulses (longer than 1ms) pass through
-- Perfect for mechanical switches!
-```
-
-#### 📊 **Before vs After Results:**
-
-#### **Without Debounce Capacitor:**
-```bash
-Anemometer Test Results:
-- 1 manual spin → 3-7 pulses counted
-- Wind speed: Erratic, too high
-- Data: Noisy, unreliable
-```
-
-#### **With 100nF Debounce Capacitor:**
-```bash
-Anemometer Test Results:
-- 1 manual spin → 1 pulse counted  
-- Wind speed: Accurate, stable
-- Data: Clean, reliable
-```
-
-#### **Hardware + Software = Best Results:**
-```bash
-Hardware debounce (100nF): Smooths electrical bounce
-Software debounce (10ms):  Ignores rapid callbacks
-
-Combined: Nearly perfect pulse counting!
-```
-
-#### 🌬️ **Real-World Impact:**
-
-**Without proper debouncing:**
-- Calm day (5 km/h wind) might read as 20 km/h
-- Gusty conditions become unreadable
-- False storm warnings
-
-**With proper debouncing:**
-- Accurate wind measurements
-- Reliable weather data
-- Proper storm detection
-
-#### **Component Specs:**
-```bash
-Capacitor: 100nF (0.1μF) ceramic capacitor
-- Voltage: 50V (overkill, but safe)
-- Type: Ceramic (X7R or C0G)
-- Package: Through-hole or 0805 SMD
-- Cost: €0.05-0.10
-```
 ## 📊 **Testing Process:**
 
 ### **Step 1: Bench Test (Short Cable)**
@@ -204,13 +86,35 @@ Capacitor: 100nF (0.1μF) ceramic capacitor
 4. Look for electrical noise or interference
 ```
 
-### **Step 3: Long Cable Test (TBD)**
+### **Step 3: Long Cable Test**
 ```bash
 1. Install long cable run
 2. Test pulse detection at various spin rates  
 3. Monitor for false pulses or missed pulses
 4. Add protection components if needed
 ```
+
+### **Long Cable Troubleshooting:**
+```bash
+If you see issues:
+
+False pulses (too many counts):
+- Add 100nF capacitor for debouncing
+- Increase bouncetime in software (try 20-50ms)
+- Check for loose connections
+
+Missed pulses (too few counts):
+- Verify good ground connection
+- Check cable continuity
+- Ensure pullup is working (measure voltage)
+
+No pulses at all:
+- Test continuity with multimeter
+- Check GPIO pin assignment
+- Verify internal pullup is enabled
+```
+
+
 ## 💡 **Anemometer-Specific Tips:**
 
 From **Weather Meter Hookup Guide**:
