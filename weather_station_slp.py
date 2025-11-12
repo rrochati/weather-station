@@ -10,7 +10,7 @@ from modules.openweathermap import print_detailed_weather_data, print_air_qualit
 from modules.database import WeatherDatabase
 from modules.anemometer import start_gpio, measure_wind_speed
 
-LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/jarvis/jarvis.log')
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
 # Enable logging
 logging.basicConfig(

@@ -3,7 +3,7 @@ import board # pyright: ignore[reportMissingImports]
 import busio # pyright: ignore[reportMissingImports]
 from adafruit_bme280 import basic as adafruit_bme280 # pyright: ignore[reportMissingImports]
 
-LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/jarvis/jarvis.log')
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
 # Enable logging
 logging.basicConfig(

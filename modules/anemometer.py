@@ -5,7 +5,7 @@ import busio
 import lgpio
 import sys 
 
-LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/jarvis/jarvis.log')
+LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
 # Enable logging
 logging.basicConfig(
