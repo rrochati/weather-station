@@ -15,8 +15,15 @@ Usage: python3 wind_vane_test.py
 import time
 import board
 import busio
-import adafruit_ads1x15.ads1115 as ADS
-from adafruit_ads1x15.analog_in import AnalogIn
+try:
+    # Try newer CircuitPython library first
+    import adafruit_ads1x15.ads1115 as ADS
+    from adafruit_ads1x15.analog_in import AnalogIn
+    USE_CIRCUITPYTHON = True
+except ImportError:
+    # Fall back to older library
+    import Adafruit_ADS1x15
+    USE_CIRCUITPYTHON = False
 
 # -------------------------------------------------
 # Configuration
@@ -59,31 +66,47 @@ def setup_ads1115():
     try:
         print("🔧 Setting up I2C and ADS1115...")
         
-        # I2C setup
-        i2c = busio.I2C(board.SCL, board.SDA)
+        if USE_CIRCUITPYTHON:
+            # I2C setup
+            i2c = busio.I2C(board.SCL, board.SDA)
+            
+            # ADS1115 setup
+            ads = ADS.ADS1115(i2c)
+            ads.gain = 1  # ±4.096V range (suitable for 3.3V system)
+            
+            # Wind vane on A0
+            wind_vane = AnalogIn(ads, ADS.P0)
+            
+            print("✅ ADS1115 initialized successfully (CircuitPython)")
+            print(f"✅ Wind vane connected to A0")
+            print(f"✅ Voltage range: ±{ads.reference_voltage:.3f}V")
+            
+        else:
+            # Older library setup
+            ads = Adafruit_ADS1x15.ADS1115()
+            wind_vane = ads
+            
+            print("✅ ADS1115 initialized successfully (Legacy)")
+            print(f"✅ Wind vane connected to A0")
+            print(f"✅ Voltage range: ±4.096V")
         
-        # ADS1115 setup
-        ads = ADS.ADS1115(i2c)
-        ads.gain = 1  # ±4.096V range (suitable for 3.3V system)
-        
-        # Wind vane on A0
-        wind_vane = AnalogIn(ads, ADS.P0)
-        
-        print("✅ ADS1115 initialized successfully")
-        print(f"✅ Wind vane connected to A0")
-        print(f"✅ Voltage range: ±{ads.reference_voltage:.3f}V")
-        
-        return wind_vane
+        return wind_vane, ads if USE_CIRCUITPYTHON else wind_vane
         
     except Exception as e:
         print(f"❌ Error setting up ADS1115: {e}")
-        return None
+        return None, None
 
 def read_wind_direction(wind_vane):
     """Read voltage and convert to compass direction"""
     try:
         # Read voltage
-        voltage = wind_vane.voltage
+        if USE_CIRCUITPYTHON:
+            voltage = wind_vane.voltage
+        else:
+            # Channel 0, gain=1 (±4.096V), sample rate=860 samples/second
+            raw_value = wind_vane.read_adc(0, gain=1)
+            # Convert to voltage (16-bit ADC with ±4.096V range)
+            voltage = raw_value * 4.096 / 32767.0
         
         # Find closest voltage match
         closest_voltage = min(VOLTAGE_TO_DIR.keys(), key=lambda x: abs(x - voltage))
@@ -107,7 +130,7 @@ def read_wind_direction(wind_vane):
 
 def test_voltage_readings():
     """Test and display voltage readings continuously"""
-    wind_vane = setup_ads1115()
+    wind_vane, ads = setup_ads1115()
     
     if wind_vane is None:
         return
@@ -194,7 +217,7 @@ def voltage_calibration_helper():
     print("Manually point your wind vane to each direction and record voltages")
     print()
     
-    wind_vane = setup_ads1115()
+    wind_vane, ads = setup_ads1115()
     if wind_vane is None:
         return
     
@@ -209,7 +232,11 @@ def voltage_calibration_helper():
         voltages = []
         print("   Taking 5 readings...")
         for j in range(5):
-            voltage = wind_vane.voltage
+            if USE_CIRCUITPYTHON:
+                voltage = wind_vane.voltage
+            else:
+                raw_value = wind_vane.read_adc(0, gain=1)
+                voltage = raw_value * 4.096 / 32767.0
             voltages.append(voltage)
             print(f"   Reading {j+1}: {voltage:.4f}V")
             time.sleep(0.5)

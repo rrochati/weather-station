@@ -47,6 +47,10 @@ But, due to our RJ breakout unusual color pattern we already discussed on Anemom
                                     GND
 ```
 
+## install python prereqs:
+```bash
+pip install adafruit-circuitpython-ads1x15
+```
 
 ## 📚 References
 
