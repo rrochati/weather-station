@@ -39,16 +39,16 @@ VOLTAGE_TO_DIR = {
     0.252: 202.5,  # SSW
     0.254: 180.0,  # S
     0.441: 225.0,  # SW
-#    0.441: 247.5,  # WSW (Note: identical voltage to SW)
+    0.602: 247.5,  # WSW (Note: very close voltage voltage to SW)
     0.763: 270.0,  # W
-#    0.763: 292.5,  # WNW (Note: identical voltage to W)
+    1.043: 292.5,  # WNW (Note: very close voltage voltage to W)
     1.260: 135.0,  # SE
     1.261: 157.5,  # SSE
     1.802: 315.0,  # NW
     1.974: 337.5,  # NNW
     2.355: 67.5,   # ENE
     2.356: 90.0,   # E
-#    2.356: 112.5,  # ESE (Note: very close voltage to E)
+    2.626: 112.5,  # ESE (Note: very close voltage to E)
     2.681: 45.0,   # NE
     2.858: 22.5,   # NNE
     2.973: 0.0,    # N
