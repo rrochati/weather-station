@@ -30,7 +30,7 @@ except ImportError:
 # -------------------------------------------------
 
 # Voltage tolerance for direction matching (volts)
-TOLERANCE = 0.08
+TOLERANCE = 0.05
 
 # Wind direction mapping based on your actual hardware calibration
 # Custom calibrated values from your SparkFun Weather Kit + 10kΩ voltage divider
@@ -45,12 +45,12 @@ VOLTAGE_TO_DIR = {
     1.260: 135.0,  # SE
     1.261: 157.5,  # SSE
     1.802: 315.0,  # NW
-#    1.802: 337.5,  # NNW (Note: identical voltage to NW)
+    1.974: 337.5,  # NNW
     2.355: 67.5,   # ENE
     2.356: 90.0,   # E
 #    2.356: 112.5,  # ESE (Note: very close voltage to E)
-#    2.681: 22.5,   # NNE (Note: identical voltage to NE)
     2.681: 45.0,   # NE
+    2.858: 22.5,   # NNE
     2.973: 0.0,    # N
 }
 # Direction names for easy reading
