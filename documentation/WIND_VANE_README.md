@@ -22,29 +22,26 @@ But, due to our RJ breakout unusual color pattern we already discussed on Anemom
     | Pin 3	  | Yellow     | Ground                  | Connect to GND                 | Red            | Purple Male          |
     | Pin 4	  | Green	   | Wind Vane Signal        | Connect to DFR0553 A0          | Black          | Brown Male           |
 
-    **The Pins 1 and 4 function need to be confirmed.**
+    **The Pins 1 and 4 function confirmed.**
 
 ### Wiring diagram so far:
 
 - Pi
 
-    ![alt text](images/Pi_wiring.png)
+    <img src="images/Pi_wiring.png" alt="Raspberry Pi GPIO pinout diagram showing connections for wind vane circuit with pins labeled for 3.3V power, ground, and GPIO 17 for anemometer signal" width="500"> 
 
 - BreadBoard
 
-    ![alt text](images/breadboard_wiring.png)
+    <img src="images/breadboard_wiring.png" alt="BreadBoard pinout diagram showing connections for BME280, DFR0553, Anemometer and Wind vane" width="800"> 
+
 
 ### Circuit Diagram
 ```bash
-3.3V (Row 1+) ────[10kΩ]────┬────[100nF]────GND (Row 1-)
-                              │
-                              ├────► DFR0553 A0
-                              │
-                              └────► Wind Vane Signal (Brown)
-                                     │
-                              Wind Vane Internal Resistors
-                                     │
-                                    GND
+Power Rail → 10kΩ (17A→17B→20B) → Junction (Row 20) → ADS1115 A0 (20D)
+                                      ↓
+                                 100nF (20C→21D) → GND Rail
+                                      ↓
+                               Wind Vane Signal (20A - Brown)
 ```
 
 ## install python prereqs:

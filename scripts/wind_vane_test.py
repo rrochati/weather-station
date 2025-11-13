@@ -222,16 +222,17 @@ def voltage_calibration_helper():
         return
     
     calibration_data = {}
-    directions = [0, 45, 90, 135, 180, 225, 270, 315]  # Major directions
-    dir_names_simple = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"]
+    # All 16 compass directions (every 22.5°)
+    directions = [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5, 180, 202.5, 225, 247.5, 270, 292.5, 315, 337.5]
+    dir_names_simple = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"]
     
     for i, (direction, name) in enumerate(zip(directions, dir_names_simple)):
         input(f"\n👉 Point wind vane to {direction}° ({name}) and press Enter...")
         
         # Take multiple readings for accuracy
         voltages = []
-        print("   Taking 5 readings...")
-        for j in range(5):
+        print("   Taking 10 readings...")
+        for j in range(10):
             if USE_CIRCUITPYTHON:
                 voltage = wind_vane.voltage
             else:
