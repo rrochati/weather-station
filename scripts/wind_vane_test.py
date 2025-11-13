@@ -46,9 +46,9 @@ VOLTAGE_TO_DIR = {
     1.261: 157.5,  # SSE
     1.802: 315.0,  # NW
     1.974: 337.5,  # NNW
-    2.355: 67.5,   # ENE
+    2.255: 67.5,   # ENE
     2.356: 90.0,   # E
-    2.626: 112.5,  # ESE (Note: very close voltage to E)
+    2.437: 112.5,  # ESE (Note: very close voltage to E)
     2.681: 45.0,   # NE
     2.858: 22.5,   # NNE
     2.973: 0.0,    # N
