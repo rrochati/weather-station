@@ -49,6 +49,38 @@ Power Rail → 10kΩ (17A→17B→20B) → Junction (Row 20) → ADS1115 A0 (20D
 pip install adafruit-circuitpython-ads1x15
 ```
 
+## Calibrate your readings
+
+Use script scripts/wind_vane_test.py
+
+The one that worked better for me is different from spec. Maybe the spec refer to south emisphere readings?
+
+# Voltage tolerance for direction matching (volts)
+TOLERANCE = 0.05
+
+# Wind direction mapping based on your actual hardware calibration
+# Custom calibrated values from your SparkFun Weather Kit + 10kΩ voltage divider
+# Note: Some adjacent directions have identical voltages - hardware limitation
+VOLTAGE_TO_DIR = {
+    0.252: 202.5,  # SSW
+    0.254: 180.0,  # S
+    0.441: 225.0,  # SW
+    0.602: 247.5,  # WSW (Note: very close voltage voltage to SW)
+    0.763: 270.0,  # W
+    1.043: 292.5,  # WNW (Note: very close voltage voltage to W)
+    1.260: 135.0,  # SE
+    1.261: 157.5,  # SSE
+    1.802: 315.0,  # NW
+    1.974: 337.5,  # NNW
+    2.255: 67.5,   # ENE
+    2.356: 90.0,   # E
+    2.437: 112.5,  # ESE (Note: very close voltage to E)
+    2.681: 45.0,   # NE
+    2.858: 22.5,   # NNE
+    2.973: 0.0,    # N
+}
+
+
 ## 📚 References
 
 - [Weather Meter Kit product page](https://www.sparkfun.com/weather-meter-kit.html)
