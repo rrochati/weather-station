@@ -36,22 +36,22 @@ TOLERANCE = 0.05
 # Custom calibrated values from your SparkFun Weather Kit + 10kΩ voltage divider
 # Note: Some adjacent directions have identical voltages - hardware limitation
 VOLTAGE_TO_DIR = {
-    0.270: 67.5,
-    0.300: 90.0,
-    0.212: 112.5,
-    0.595: 135.0,
-    0.408: 157.5,
-    0.926: 180.0,
-    0.789: 202.5,
-    2.031: 225.0,
-    1.932: 247.5,
-    3.046: 270.0,
-    2.667: 292.5,
-    2.859: 315.0,
-    2.265: 337.5,
-    2.533: 0.0,
-    1.308: 22.5,
-    1.487: 45.0,
+    0.252: 202.5,  # SSW
+    0.254: 180.0,  # S
+    0.441: 225.0,  # SW
+#    0.441: 247.5,  # WSW (Note: identical voltage to SW)
+    0.763: 270.0,  # W
+#    0.763: 292.5,  # WNW (Note: identical voltage to W)
+    1.260: 135.0,  # SE
+    1.261: 157.5,  # SSE
+    1.802: 315.0,  # NW
+    1.974: 337.5,  # NNW
+    2.355: 67.5,   # ENE
+    2.356: 90.0,   # E
+#    2.356: 112.5,  # ESE (Note: very close voltage to E)
+    2.681: 45.0,   # NE
+    2.858: 22.5,   # NNE
+    2.973: 0.0,    # N
 }
 
 # Direction names for easy reading
