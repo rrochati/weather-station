@@ -139,13 +139,14 @@ class WindVane:
             direction = self.voltage_to_dir[closest_voltage]
             direction_name = self.dir_name.get(direction, f"{direction}°")
             confidence = "HIGH"
+            logger.info(f"Wind Vane Reading: {voltage:.3f} V -> {direction_name} ({confidence} confidence)")
         else:
             # Interpolate between two closest values if outside tolerance
             direction = None
             direction_name = "UNKNOWN"
             confidence = "LOW"
+            logger.info(f"Wind Vane Reading: {voltage:.3f} V -> {direction_name} ({confidence} confidence)")
         
-        logger.info(f"Wind Vane Reading: {voltage:.3f} V -> {direction_name} ({confidence} confidence)")
         return voltage, direction, direction_name, confidence, voltage_diff
         
     except Exception as e:
