@@ -127,7 +127,7 @@ class WeatherDatabase:
                     (timestamp, sensor_temperature, sensor_humidity, sensor_pressure, sensor_altitude,
                      sensor_wind_speed, sensor_wind_direction, sensor_wind_direction_name, sensor_wind_vane_voltage, sensor_rain_interval,
                      sea_level_pressure)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (timestamp, temperature, humidity, pressure, altitude,
                       wind_speed, wind_direction, wind_direction_name, wind_vane_voltage, rain_interval,
                       sea_level_pressure))
