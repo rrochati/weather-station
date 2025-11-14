@@ -9,7 +9,6 @@ from modules.openweathermap import get_current_sea_level_pressure, get_air_quali
 from modules.openweathermap import print_detailed_weather_data, print_air_quality
 from modules.database import WeatherDatabase
 from modules.anemometer import start_gpio, measure_wind_speed
-from modules.windvane import WindVane
 
 LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
@@ -199,9 +198,6 @@ class WeatherStationManager:
         start_gpio()
         wind_read_interval = 60  # seconds
         
-        wind_vane = WindVane()
-        wind_vane.setup_ads1115()
-        logger.info("Wind Vane initialized.")
         while True:
             logger.info("Before main monitoring loop...")
             try:
@@ -218,14 +214,12 @@ class WeatherStationManager:
                 
                 speed, total_pulses = measure_wind_speed(wind_read_interval)
                 
-                voltage, direction, direction_name, confidence, voltage_diff = wind_vane.read_wind_direction()
-                
                 reading_count += 1
                 
                 # Log sensor readings
                 logger.info(f"Reading #{reading_count}: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
                 logger.info(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
-                logger.info(f"Wind Vane: {voltage:.3f} V -> {direction_name} ({confidence} confidence, diff={voltage_diff:.3f} V)")
+                #logger.info(f"Wind Vane: {voltage:.3f} V -> {direction_name} ({confidence} confidence, diff={voltage_diff:.3f} V)")
                 
                 # Save sensor data to database
                 timestamp = datetime.now().isoformat(timespec='seconds')
@@ -237,8 +231,6 @@ class WeatherStationManager:
                     altitude=altitude,
                     sea_level_pressure=self.current_slp,
                     wind_speed=speed*1.944,  # Convert m/s to knots
-                    wind_vane_voltage=voltage,
-                    wind_direction=direction_name,
                 )
                 
                 if not success:
