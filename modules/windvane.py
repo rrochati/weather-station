@@ -14,7 +14,8 @@ import time
 import board
 import busio
 import os
-import logger
+import sys
+import logging
 
 LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
@@ -78,10 +79,14 @@ DIR_NAMES = {
 }
 
 class WindVane:
-    def __init__(self, tolerance: float = TOLERANCE, voltage_to_dir: dict = VOLTAGE_TO_DIR, dir_name: dict = DIR_NAMES):
-        self.setup_ads1115()
+    def __init__(self, tolerance: float = TOLERANCE, voltage_to_dir: dict = VOLTAGE_TO_DIR, dir_names: dict = DIR_NAMES):
+        self.tolerance = tolerance
+        self.voltage_to_dir = voltage_to_dir
+        self.dir_names = dir_names
+        self.wind_vane = None
+        self.ads = None
 
-    def setup_ads1115():
+    def setup_ads1115(self):
         """Initialize ADS1115 for wind vane readings"""
         try:
             logger.info("🔧 Setting up I2C and ADS1115...")
@@ -91,11 +96,11 @@ class WindVane:
                 i2c = busio.I2C(board.SCL, board.SDA)
                 
                 # ADS1115 setup
-                ads = ADS1115(i2c)
-                ads.gain = 1  # ±4.096V range (suitable for 3.3V system)
+                self.ads = ADS1115(i2c)
+                self.ads.gain = 1  # ±4.096V range (suitable for 3.3V system)
                 
                 # Wind vane on A0 (channel 0)
-                wind_vane = AnalogIn(ads, 0)  # Channel 0 = A0
+                self.wind_vane = AnalogIn(self.ads, 0)  # Channel 0 = A0
                 
                 logger.info("✅ ADS1115 initialized successfully (CircuitPython)")
                 logger.info(f"✅ Wind vane connected to A0")
@@ -103,52 +108,56 @@ class WindVane:
                 
             else:
                 # Older library setup
-                ads = Adafruit_ADS1x15.ADS1115()
-                wind_vane = ads
+                self.ads = Adafruit_ADS1x15.ADS1115()
+                self.wind_vane = self.ads
                 
                 logger.info("✅ ADS1115 initialized successfully (Legacy)")
                 logger.info(f"✅ Wind vane connected to A0")
                 logger.info(f"✅ Voltage range: ±4.096V")
             
-            return wind_vane, ads if USE_CIRCUITPYTHON else wind_vane
+            return True
             
         except Exception as e:
             logger.error(f"❌ Error setting up ADS1115: {e}")
-            return None, None
+            return False
 
     def read_wind_direction(self):
         """
         Read voltage and convert to compass direction
         """
-    wind_vane, ads = setup_ads1115()
-    try:
-        # Read voltage
-        if USE_CIRCUITPYTHON:
-            voltage = wind_vane.voltage
-        else:
-            # Channel 0, gain=1 (±4.096V), sample rate=860 samples/second
-            raw_value = wind_vane.read_adc(0, gain=1)
-            # Convert to voltage (16-bit ADC with ±4.096V range)
-            voltage = raw_value * 4.096 / 32767.0
-        
-        # Find closest voltage match
-        closest_voltage = min(self.voltage_to_dir.keys(), key=lambda x: abs(x - voltage))
-        voltage_diff = abs(closest_voltage - voltage)
-        
-        if voltage_diff <= self.tolerance:
-            direction = self.voltage_to_dir[closest_voltage]
-            direction_name = self.dir_name.get(direction, f"{direction}°")
-            confidence = "HIGH"
-            logger.info(f"Wind Vane Reading: {voltage:.3f} V -> {direction_name} ({confidence} confidence)")
-        else:
-            # Interpolate between two closest values if outside tolerance
-            direction = None
-            direction_name = "UNKNOWN"
-            confidence = "LOW"
-            logger.info(f"Wind Vane Reading: {voltage:.3f} V -> {direction_name} ({confidence} confidence)")
-        
-        return voltage, direction, direction_name, confidence, voltage_diff
-        
-    except Exception as e:
-        logger.error(f"❌ Error reading wind vane: {e}")
-        return None, None, None, None, None
+        try:
+            # Check if ADS1115 is initialized
+            if self.wind_vane is None:
+                logger.warning("ADS1115 not initialized. Call setup_ads1115() first.")
+                return None, None, None, None, None
+                
+            # Read voltage
+            if USE_CIRCUITPYTHON:
+                voltage = self.wind_vane.voltage
+            else:
+                # Channel 0, gain=1 (±4.096V), sample rate=860 samples/second
+                raw_value = self.wind_vane.read_adc(0, gain=1)
+                # Convert to voltage (16-bit ADC with ±4.096V range)
+                voltage = raw_value * 4.096 / 32767.0
+            
+            # Find closest voltage match
+            closest_voltage = min(self.voltage_to_dir.keys(), key=lambda x: abs(x - voltage))
+            voltage_diff = abs(closest_voltage - voltage)
+            
+            if voltage_diff <= self.tolerance:
+                direction = self.voltage_to_dir[closest_voltage]
+                direction_name = self.dir_names.get(direction, f"{direction}°")
+                confidence = "HIGH"
+                logger.info(f"Wind Vane Reading: {voltage:.3f} V -> {direction_name} ({confidence} confidence)")
+            else:
+                # Interpolate between two closest values if outside tolerance
+                direction = None
+                direction_name = "UNKNOWN"
+                confidence = "LOW"
+                logger.info(f"Wind Vane Reading: {voltage:.3f} V -> {direction_name} ({confidence} confidence)")
+            
+            return voltage, direction, direction_name, confidence, voltage_diff
+            
+        except Exception as e:
+            logger.error(f"❌ Error reading wind vane: {e}")
+            return None, None, None, None, None
