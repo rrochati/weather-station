@@ -223,7 +223,7 @@ class WeatherStationManager:
                 reading_count += 1
                 
                 # Log sensor readings
-                logger.info(f"Reading #{reading_count}: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
+                logger.info(f"Internal Sensors: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
                 logger.info(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
                 logger.info(f"Wind Vane: {voltage:.3f} V, Direction: {direction}, Direction name: {direction_name}, Confidence: {confidence}, Diff: {voltage_diff:.3f} V)")
                 
@@ -237,6 +237,9 @@ class WeatherStationManager:
                     altitude=altitude,
                     sea_level_pressure=self.current_slp,
                     wind_speed=speed*1.944,  # Convert m/s to knots
+                    sensor_wind_direction=direction,
+                    sensor_wind_direction_name=direction_name,
+                    sensor_wind_vane_voltage=voltage,
                 )
                 
                 if not success:
