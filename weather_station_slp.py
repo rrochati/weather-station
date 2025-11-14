@@ -203,9 +203,7 @@ class WeatherStationManager:
         vane.setup_ads1115()
         
         while True:
-            logger.info("Before main monitoring loop...")
             try:
-                logger.info("Beginning main monitoring loop...")
                 # Update weather data if it's time
                 if self.should_update_weather():
                     self.update_weather_data()
