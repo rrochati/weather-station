@@ -34,3 +34,5 @@ ALTER TABLE weather_readings ADD COLUMN sensor_wind_direction_name TEXT;
 
 -- Exit
 .quit
+
+sqlite3 /home/rrocha/data/weather_data.db -header -column "SELECT * FROM weather_readings ORDER BY timestamp DESC LIMIT 10;"

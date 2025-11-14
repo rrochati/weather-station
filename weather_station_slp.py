@@ -250,7 +250,7 @@ class WeatherStationManager:
                                next_update_time.strftime('%H:%M'), time_until_next)
                 
                 # Wait for next reading
-                time.sleep(SENSOR_READ_INTERVAL_MINUTES * 60)
+                #time.sleep(SENSOR_READ_INTERVAL_MINUTES * 60)
                 
             except KeyboardInterrupt:
                 logger.info("Keyboard interrupt received. Stopping weather station...")
