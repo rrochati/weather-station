@@ -115,6 +115,7 @@ class WeatherDatabase:
         sea_level_pressure: float,
         wind_speed: Optional[float] = None,
         wind_direction: Optional[float] = None,
+        wind_direction_name: Optional[str] = None,
         wind_vane_voltage: Optional[float] = None,
         rain_interval: Optional[float] = None ) -> bool:
         """Insert a weather reading into the database."""

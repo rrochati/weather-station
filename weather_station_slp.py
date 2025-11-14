@@ -237,9 +237,9 @@ class WeatherStationManager:
                     altitude=altitude,
                     sea_level_pressure=self.current_slp,
                     wind_speed=speed*1.944,  # Convert m/s to knots
-                    sensor_wind_direction=direction,
-                    sensor_wind_direction_name=direction_name,
-                    sensor_wind_vane_voltage=voltage,
+                    wind_direction=direction,
+                    wind_direction_name=direction_name,
+                    wind_vane_voltage=voltage,
                 )
                 
                 if not success:
