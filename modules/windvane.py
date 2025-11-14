@@ -79,7 +79,7 @@ DIR_NAMES = {
 
 class WindVane:
     def __init__(self, tolerance: float = TOLERANCE, voltage_to_dir: dict = VOLTAGE_TO_DIR, dir_name: dict = DIR_NAMES):
-        self.init_database()
+        self.setup_ads1115()
 
     def setup_ads1115():
         """Initialize ADS1115 for wind vane readings"""
@@ -144,7 +144,8 @@ class WindVane:
             direction = None
             direction_name = "UNKNOWN"
             confidence = "LOW"
-            
+        
+        logger.info(f"Wind Vane Reading: {voltage:.3f} V -> {direction_name} ({confidence} confidence)")
         return voltage, direction, direction_name, confidence, voltage_diff
         
     except Exception as e:
