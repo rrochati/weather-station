@@ -9,6 +9,7 @@ from modules.openweathermap import get_current_sea_level_pressure, get_air_quali
 from modules.openweathermap import print_detailed_weather_data, print_air_quality
 from modules.database import WeatherDatabase
 from modules.anemometer import start_gpio, measure_wind_speed
+from modules.windvane import WindVane
 
 LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
@@ -197,6 +198,9 @@ class WeatherStationManager:
         
         start_gpio()
         wind_read_interval = 60  # seconds
+        
+        vane= WindVane()
+        vane.setup_ads1115()
         
         while True:
             logger.info("Before main monitoring loop...")

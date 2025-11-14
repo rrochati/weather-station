@@ -31,16 +31,6 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-try:
-    # Try newer CircuitPython library first
-    from adafruit_ads1x15.ads1115 import ADS1115
-    from adafruit_ads1x15.analog_in import AnalogIn
-    USE_CIRCUITPYTHON = True
-except ImportError:
-    # Fall back to older library
-    import Adafruit_ADS1x15
-    USE_CIRCUITPYTHON = False
-
 # -------------------------------------------------
 # Configuration
 # -------------------------------------------------
