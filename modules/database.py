@@ -53,14 +53,6 @@ class WeatherDatabase:
                     )
                 ''')
                 
-                # Check if we need to add the new column to existing table
-                cursor.execute("PRAGMA table_info(weather_readings)")
-                columns = [column[1] for column in cursor.fetchall()]
-                
-                if 'sensor_wind_direction_name' not in columns:
-                    logger.info("Adding sensor_wind_direction_name column to existing weather_readings table")
-                    cursor.execute('ALTER TABLE weather_readings ADD COLUMN sensor_wind_direction_name TEXT')
-                
                 # Create weather_api_data table for OpenWeatherMap data
                 cursor.execute('''
                     CREATE TABLE IF NOT EXISTS weather_api_data (
