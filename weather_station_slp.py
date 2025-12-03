@@ -9,6 +9,7 @@ from modules.openweathermap import get_current_sea_level_pressure, get_air_quali
 from modules.openweathermap import print_detailed_weather_data, print_air_quality
 from modules.database import WeatherDatabase
 from modules.anemometer import start_gpio, measure_wind_speed
+from modules.windvane import WindVane
 
 LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
@@ -198,10 +199,11 @@ class WeatherStationManager:
         start_gpio()
         wind_read_interval = 60  # seconds
         
+        vane= WindVane()
+        vane.setup_ads1115()
+        
         while True:
-            logger.info("Before main monitoring loop...")
             try:
-                logger.info("Beginning main monitoring loop...")
                 # Update weather data if it's time
                 if self.should_update_weather():
                     self.update_weather_data()
@@ -214,12 +216,14 @@ class WeatherStationManager:
                 
                 speed, total_pulses = measure_wind_speed(wind_read_interval)
                 
+                voltage, direction, direction_name, confidence, voltage_diff = vane.read_wind_direction()
+                
                 reading_count += 1
                 
                 # Log sensor readings
-                logger.info(f"Reading #{reading_count}: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
+                logger.info(f"Internal Sensors: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
                 logger.info(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
-                #logger.info(f"Wind Vane: {voltage:.3f} V -> {direction_name} ({confidence} confidence, diff={voltage_diff:.3f} V)")
+                logger.info(f"Wind Vane: {voltage:.3f} V, Direction: {direction}, Direction name: {direction_name}, Confidence: {confidence}, Diff: {voltage_diff:.3f} V)")
                 
                 # Save sensor data to database
                 timestamp = datetime.now().isoformat(timespec='seconds')
@@ -231,6 +235,9 @@ class WeatherStationManager:
                     altitude=altitude,
                     sea_level_pressure=self.current_slp,
                     wind_speed=speed*1.944,  # Convert m/s to knots
+                    wind_direction=direction,
+                    wind_direction_name=direction_name,
+                    wind_vane_voltage=voltage,
                 )
                 
                 if not success:
@@ -243,7 +250,7 @@ class WeatherStationManager:
                                next_update_time.strftime('%H:%M'), time_until_next)
                 
                 # Wait for next reading
-                time.sleep(SENSOR_READ_INTERVAL_MINUTES * 60)
+                #time.sleep(SENSOR_READ_INTERVAL_MINUTES * 60)
                 
             except KeyboardInterrupt:
                 logger.info("Keyboard interrupt received. Stopping weather station...")

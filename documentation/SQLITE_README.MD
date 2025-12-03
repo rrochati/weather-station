@@ -21,3 +21,18 @@ Analyze data: python weather_analyzer.py --recent 24 --stats 24
 Export data: python weather_analyzer.py --export 168 (export last week)
 Database stats: python weather_analyzer.py --db-stats
 The SQLite database will be created at ../weather_data.db and will store all your timestamped weather data for long-term analysis and historical tracking.
+
+## Usefull commands:
+-- Connect to your database
+sqlite3 /home/rrocha/data/weather_data.db
+
+-- Add the missing column
+ALTER TABLE weather_readings ADD COLUMN sensor_wind_direction_name TEXT;
+
+-- Verify the column was added
+.schema weather_readings
+
+-- Exit
+.quit
+
+sqlite3 /home/rrocha/data/weather_data.db -header -column "SELECT * FROM weather_readings ORDER BY timestamp DESC LIMIT 10;"
