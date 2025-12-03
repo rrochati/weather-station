@@ -137,4 +137,4 @@ Connect via UART and use `gps3` or `gpsd` to fetch live coordinates.
 
 - [SparkFun Weather Meter Datasheet (PDF)](https://cdn.sparkfun.com/assets/d/1/e/0/6/DS-15901-Weather_Meter.pdf)
 - [DFRobot Gravity ADS1115](https://www.dfrobot.com/product-1894.html)
-
+- [Pinout](https://pinout.ai/raspberry-pi-5)
