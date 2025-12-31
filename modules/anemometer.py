@@ -47,9 +47,9 @@ def start_gpio():
         logger.info("✅ GPIO chip opened successfully")
         
         # Claim pin as input with pull-up
-        lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN)
+        lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN, lgpio.SET_PULL_UP)
         lgpio.gpio_set_debounce_micros(gpio_handle, ANEMO_PIN, 10000)
-        logger.info(f"✅ GPIO{ANEMO_PIN} claimed as input")
+        logger.info(f"✅ GPIO{ANEMO_PIN} claimed as input with pull-up enabled")
 
     except Exception as e:
         logger.error(f"❌ Error during GPIO test: {e}")
@@ -94,3 +94,4 @@ def measure_wind_speed(interval=5):
     logger.info(f"wind Measurement complete: {pulses} pulses in {interval}s = {wind_speed:.2f} m/s")
     
     return wind_speed, pulses
+
