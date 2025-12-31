@@ -46,7 +46,7 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------
 
 # Voltage tolerance for direction matching (volts)
-TOLERANCE = 0.05
+TOLERANCE = 0.5
 
 # Wind direction mapping based on your actual hardware calibration
 # Custom calibrated values from your SparkFun Weather Kit + 10kΩ voltage divider
