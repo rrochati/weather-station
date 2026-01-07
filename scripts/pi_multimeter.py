@@ -192,6 +192,46 @@ class PiMultimeter:
         except KeyboardInterrupt:
             print("\n")
     
+    def cable_continuity_mode(self):
+        """Cable continuity testing mode using A2 (A1 is used for wind vane)"""
+        print("\n" + "="*60)
+        print("🔌 CABLE CONTINUITY TEST MODE (A2)")
+        print("="*60)
+        print(f"Circuit: 3.3V → {self.R_REF}Ω → A2 → Test leads → GND")
+        print("NOTE: Using A2 since A1 is connected to wind vane")
+        print("")
+        print("Setup:")
+        print("1. Connect 10kΩ resistor from 3.3V to A2")
+        print("2. Connect RED test lead to A2")
+        print("3. Connect BLACK test lead to GND")
+        print("4. Touch RED to breakout 1 pin, BLACK to breakout 3 pin")
+        print("")
+        print("Beep indicates continuity (R < 100Ω)")
+        print("Press Ctrl+C to stop\n")
+        
+        try:
+            last_state = False
+            while True:
+                has_continuity = self.continuity_test(channel=2)
+                resistance = self.measure_resistance(channel=2, samples=3)
+                
+                if has_continuity:
+                    r_str = self.format_resistance(resistance)
+                    print(f"✅ CONTINUITY! ({r_str})  ", end='\r')
+                    
+                    # Beep on transition to continuity
+                    if not last_state:
+                        print("\a", end='')  # Terminal beep
+                        sys.stdout.flush()
+                else:
+                    r_str = self.format_resistance(resistance)
+                    print(f"❌ No continuity ({r_str})  ", end='\r')
+                
+                last_state = has_continuity
+                time.sleep(0.1)
+        except KeyboardInterrupt:
+            print("\n")
+    
     def multi_channel_voltage(self):
         """Monitor all 4 channels simultaneously"""
         print("\n" + "="*60)
@@ -221,11 +261,12 @@ class PiMultimeter:
             print("Choose a mode:")
             print("  1. Voltmeter (DC Voltage)")
             print("  2. Ohmmeter (Resistance)")
-            print("  3. Continuity Test")
-            print("  4. 4-Channel Voltage Monitor")
-            print("  5. Single Voltage Reading")
-            print("  6. Single Resistance Reading")
-            print("  7. Change Gain (Voltage Range)")
+            print("  3. Continuity Test (A1)")
+            print("  4. Cable Continuity Test (A2) ⭐ For cable testing")
+            print("  5. 4-Channel Voltage Monitor")
+            print("  6. Single Voltage Reading")
+            print("  7. Single Resistance Reading")
+            print("  8. Change Gain (Voltage Range)")
             print("  0. Exit")
             print("="*60)
             
@@ -239,14 +280,16 @@ class PiMultimeter:
                 elif choice == '3':
                     self.continuity_mode()
                 elif choice == '4':
-                    self.multi_channel_voltage()
+                    self.cable_continuity_mode()
                 elif choice == '5':
+                    self.multi_channel_voltage()
+                elif choice == '6':
                     v = self.measure_voltage(1)
                     print(f"\n📊 Voltage on A1: {v:+.4f}V")
-                elif choice == '6':
+                elif choice == '7':
                     r = self.measure_resistance(1)
                     print(f"\n📊 Resistance: {self.format_resistance(r)}")
-                elif choice == '7':
+                elif choice == '8':
                     self.change_gain()
                 elif choice == '0':
                     print("\n👋 Goodbye!")
