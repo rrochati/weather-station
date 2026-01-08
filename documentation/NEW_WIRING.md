@@ -37,10 +37,10 @@ As the wind vane setup is more complex, let's begin with anemometer.
     | Pin 2	           | Black        | GND           | GND Rail 13  |
     | Pin 3	           | Blue         | GPIO3 (Clock) | 2A           |
     | Pin 4	           | Green        | GPIO2 (Data)  | 4A           |
-    | Pin 5	           | Green        | Vane Signal   | 20A          |
-    | Pin 6	           | N/A          |               |              |
-    | Pin 7	           | Red          | Anemo Signal  | 14D          |
-    | Pin 8	           | TBD          | Rain Signal   |              |
+    | Pin 5	           | Purple       | Vane Signal   | 20A          |
+    | Pin 6	           | Orange       |               |              |
+    | Pin 7	           | White        | Anemo Signal  | 14D          |
+    | Pin 8	           | Brown        | Rain Signal   |              |
 
 #### RJ45 breakout 2   ---> CAT6 Cable
     | RJ45 breakout pin| CAT6 Color   | Function      | Extension    | Connect to |
@@ -73,7 +73,7 @@ As the wind vane setup is more complex, let's begin with anemometer.
 
 
 #### RJ45 breakout 4 (Rain Bucket) (tbd)
-    | RJ45 breakout pin| CAT6 Color   | Function    | Notes.          |
+    | RJ45 breakout pin| CAT6 Color   | Function    | Notes          |
     |------------------|--------------| ------------| --------------- |
     | Pin 1	           |              |             |                 |
     | Pin 2	           |              |             |                 |
