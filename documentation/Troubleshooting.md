@@ -13,21 +13,21 @@ The wiring sucks. Make shure it is wright:
 ***Check detailed instructions for connections***
 
 ### Troubleshooting scripts under scripts/windvane:
-    - check_signal.py:  
-    - circuit_debug.py:  
-    - test_ground.py: 
-    - vane_test.py: 
-    - voltage.py: 
+
 
 ### Troubleshooting scripts under scripts/anemometer:
     - 1-quick_test.py 
     - 2-testpullup.py 
     - 3-signal_test.py
 
-The last problem with anemo was the pull-up thaat was not enabled
+The last problem with anemo was the pull-up that was not enabled
 ```python
         # Claim pin as input with pull-up
         lgpio.gpio_claim_input(gpio_handle, ANEMO_PIN, lgpio.SET_PULL_UP)
         lgpio.gpio_set_debounce_micros(gpio_handle, ANEMO_PIN, 10000)
         logger.info(f"✅ GPIO{ANEMO_PIN} claimed as input with pull-up enabled")
 ```
+
+### New wiring
+The new wiring introduced a lot of new problems.
+It is documented under the wiring section.
