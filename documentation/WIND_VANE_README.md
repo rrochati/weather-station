@@ -4,23 +4,89 @@
 
 ![alt text](images/sparkfun_weather_kit.jpeg)
 
-
 ## ⚙️ Hardware and Wiring
 
-***SparkFun Weather Meter Kit Wind Vane Wiring***
+## Pre requisites
+- Digital multimeter
+- 1 RJ45 breakout
+- DuPont Cables
+- 1 breadboard
+
+### SparkFun Weather Meter Kit Wind Vane Wiring
 - The SparkFun Weather Meter Kit wind vane uses a resistor network that requires connection to your DFR0553 (ADS1115) analog input for reading wind direction.
 
 - RJ11 Connector Pinout (Wind Vane)
 The SparkFun Weather Meter Kit uses RJ11 connectors that does not follow the standard pinout.
 
-And due to our RJ breakout unusual color pattern we already discussed on Anemometer setup, check the following table for connection
 
-    | RJ11 Pin| Wire Color | Function                | Connection                     | Leroy conector | DuPont Wire soldered |
-    |---------|------------|-------------------------| ------------------------------ | -------------- | -------------------- |
-    | Pin 2	  | Black      | VCC (Power)             | Connect to 3.3V                | Yellow         | Yellow Female        |
-    | Pin 3	  | Red        | Wind Speed (Anemometer) | Connect to Pi Pin 11 (GPIO 17) | Green          | Green Female         |
-    | Pin 4	  | Yellow     | Ground                  | Connect to GND                 | Red            | Purple Male          |
-    | Pin 5	  | Green	   | Wind Vane Signal        | Connect to DFR0553 A0          | Black          | Brown Male           |
+### Identify connections
+This RJ11 to RJ45 is tricky. My suggestion, bring the whole kit mounted inside (including the stand), next to you work bench and test with the multimeter.
+Connect the RJ11 connector from vane/anemometer to test RJ45 breakout for testing.
+
+**Anemometer Wire Identification:**
+
+The anemometer uses only 2 wires - they act as a simple switch:
+
+One connects to Ground
+One is the Signal (needs pull-up resistor)
+
+1. Find which wires are for anemometer:
+    - Set multimeter to continuity/diode mode (beep mode)
+    - Spin the anemometer cups slowly
+    - Test all wire pairs
+    - The pair that beeps intermittently as you spin = Anemometer wires
+
+2. Once you find the anemometer pair:
+
+    Either wire can be ground or signal (it's just a switch).
+    In my case, it was the pins 4 and 5 from the RJ45 breakout, so RJ45 breakout pin 4 is RJ11 Red (anemometer signal) and RJ45 breakout pin 5 is RJ11 Yellow (Ground), as demonstrated below. 
+    So, I connected a Purple DuPont to RJ45 breakout Pin 4 (RJ11 Red, anemometer signal) and a Black DuPont to RJ45 breakout Pin 5 (RJ11 Yellow, GND)
+
+That leaves 2 pins for the wind vane. But the vane needs 3 wires (Power, Ground, Signal), and you only have 2 remaining...
+***The Answer: Shared Ground!***
+
+
+**Wind Vane Wire Identification:**
+We already know 2 wires, RJ11 Red (RJ45 breakout Pin 4, Purple DuPont) and RJ11 Yellow (RJ45 breakout Pin 5, Black DuPont).
+Do as combinations tests as you want. what worked for me was:
+
+1. Power-Up Test:
+    - RJ45 breakout pin 3 (RJ11 Pin 2, Black wire) → Red DuPont → Breadboard Power rail
+    - RJ45 breakout pin 5 (RJ11 Pin 4, Yellow wire) → Black DuPont → Breadboard GND rail
+    - RJ45 breakout pin 6 (RJ11 Pin 5, Green wire) → Orange DuPont → Multimeter Red probe
+    - Breadboard GND (Ground) → Multimeter Black probe
+    - Set multimeter to DC Voltage (V˜ range) position 20m
+    - Rotate vane slowly
+    ***You should see voltage varying between ~0.4V to 2.8V as you rotate through the 16 positions!***
+
+**Connection summary:**
+    | RJ11 Pin| Wire Color | Function          | Connection          | RJ45 Breakout pin | DuPont |
+    |---------|------------|-------------------| ------------------- | ----------------- | ------ |
+    | Pin 2	  | Black      | VCC (Power)       | To 3.3V             | 3                 | Red    |
+    | Pin 3	  | Red        | Anemometer signal | Pi Pin 11 (GPIO 17) | 4                 | Purple |
+    | Pin 4	  | Yellow     | Ground            | To GND              | 5                 | Black  |
+    | Pin 5	  | Green	   | Wind Vane Signal  | To DFR0553 A0       | 6                 | Orange |
+
+
+**Bench test:**
+
+Once you have the wire identified on a test breakout test the vane and anemometer on Pi
+1. Connect wires:
+    - RJ45 breakout Pin 3 → Red DuPont → Breadboard Power rail
+    - RJ45 breakout Pin 4 → Purple DuPont → Breadboard 15C
+    - RJ45 breakout Pin 5 → Black DuPont → Breadboard GND rail
+    - RJ45 breakout Pin 6 → Orange DuPont → Breadboard 20A
+
+2. Test the anemometer:
+    - Connect to Pi via ssh
+    - Activate pyenv (conda activate python311)
+    - Go to folder weather-station/scripts/anemo
+    - Run the scripts on there and follow the instructions
+
+3. Test the vane:
+    - Switch to folder weather-station/scripts/windvane
+    - Cry on your bed
+
 
 ### Wiring diagram so far:
 
@@ -35,11 +101,11 @@ And due to our RJ breakout unusual color pattern we already discussed on Anemome
 
 ### Circuit Diagram
 ```bash
-Power Rail → 10kΩ (17A→17B→20B) → Junction (Row 20) → ADS1115 A0 (20D)
-                                      ↓
-                                 100nF (20C→21D) → GND Rail
-                                      ↓
-                               Wind Vane Signal (20A - Brown)
+Power Rail → 17A → 10kΩ leg 1 → 10kΩ leg 1 17B → Junction (Row 20B) → 100nF leg 1 20C → ADS1115 A0 (20D) → Wind Vane Signal (20A - Orange)
+                                                    ↓
+                                                100nF leg 1 → 21C  
+                                                    ↓
+                                                100nF leg 2 → GND Rail
 ```
 
 ## install python prereqs:
@@ -49,7 +115,7 @@ pip install adafruit-circuitpython-ads1x15
 
 ## Calibrate your readings
 
-Use script scripts/wind_vane_test.py
+Use script scripts/3-full_vane_test.py
 
 The one that worked better for me is different from spec. Maybe the spec refer to south emisphere readings?
 
