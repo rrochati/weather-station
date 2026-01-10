@@ -12,14 +12,6 @@ The wiring sucks. Make shure it is wright:
     | Pin 4	  | Green	   | Wind Vane Signal        | DFR0553 A0          | Pin 6             | Green      |
 ***Check detailed instructions for connections***
 
-### Troubleshooting scripts under scripts/windvane:
-
-
-### Troubleshooting scripts under scripts/anemometer:
-    - 1-quick_test.py 
-    - 2-testpullup.py 
-    - 3-signal_test.py
-
 The last problem with anemo was the pull-up that was not enabled
 ```python
         # Claim pin as input with pull-up

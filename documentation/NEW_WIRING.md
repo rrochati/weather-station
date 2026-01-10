@@ -72,14 +72,15 @@ That leaves 2 pins for the wind vane. But the vane needs 3 wires (Power, Ground,
 Once you have the wire identified on a test breakout test the vane and anemometer on Pi
 1. Connect wires:
     - RJ45 breakout Pin 3 → Breadboard Power rail
-    - RJ45 breakout Pin 4 → Breadboard 20A
+    - RJ45 breakout Pin 4 → Breadboard 15C
     - RJ45 breakout Pin 5 → Breadboard GND rail
+    - RJ45 breakout Pin 6 → Breadboard 20A
 
-
+2. Test the anemometer:
     - Connect to Pi via ssh
     - Activate pyenv (conda activate python311)
-    - Go to folder scripts/windvane
-    - Run 
+    - Go to folder scripts/anemo
+    - Run the scripts on there and follow the instructions
 
 
 ### Procedure
