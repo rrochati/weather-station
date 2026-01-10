@@ -51,7 +51,7 @@ One is the Signal (needs pull-up resistor)
 
     Since either wire can be ground or signal (it's just a switch).
     In my case, it was the pins 4 and 5 from the RJ45 breakout, so I'm assuming RJ11 Yellow as ground and RJ11 Red as anemometer signal
-    So, on test RJ45 breakout, Pin 4 is RJ11 Red (as anemometer signal) and Pin 5 is RJ11 Yellow (GND)
+    So, on test RJ45 breakout, Pin 4 is RJ11 Red (anemometer signal, purple DuPont) and Pin 5 is RJ11 Yellow (GND, black DuPont)
 
 That leaves 2 pins for the wind vane. But the vane needs 3 wires (Power, Ground, Signal), and you only have 2 remaining...
 ***The Answer: Shared Ground!***
@@ -79,8 +79,12 @@ Once you have the wire identified on a test breakout test the vane and anemomete
 2. Test the anemometer:
     - Connect to Pi via ssh
     - Activate pyenv (conda activate python311)
-    - Go to folder scripts/anemo
+    - Go to folder weather-station/scripts/anemo
     - Run the scripts on there and follow the instructions
+
+3. Test the vane:
+    - Switch to folder weather-station/scripts/windvane
+    - Cry on your bed
 
 
 ### Procedure

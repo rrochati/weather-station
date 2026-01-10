@@ -11,9 +11,9 @@
 - The SparkFun Weather Meter Kit wind vane uses a resistor network that requires connection to your DFR0553 (ADS1115) analog input for reading wind direction.
 
 - RJ11 Connector Pinout (Wind Vane)
-The SparkFun Weather Meter Kit uses RJ11 connectors with the following a standard pinout.
+The SparkFun Weather Meter Kit uses RJ11 connectors that does not follow the standard pinout.
 
-But, due to our RJ breakout unusual color pattern we already discussed on Anemometer setup, check the following table for connection
+And due to our RJ breakout unusual color pattern we already discussed on Anemometer setup, check the following table for connection
 
     | RJ11 Pin| Wire Color | Function                | Connection                     | Leroy conector | DuPont Wire soldered |
     |---------|------------|-------------------------| ------------------------------ | -------------- | -------------------- |
@@ -21,8 +21,6 @@ But, due to our RJ breakout unusual color pattern we already discussed on Anemom
     | Pin 3	  | Red        | Wind Speed (Anemometer) | Connect to Pi Pin 11 (GPIO 17) | Green          | Green Female         |
     | Pin 4	  | Yellow     | Ground                  | Connect to GND                 | Red            | Purple Male          |
     | Pin 5	  | Green	   | Wind Vane Signal        | Connect to DFR0553 A0          | Black          | Brown Male           |
-
-    **The Pins 1 and 4 function confirmed.**
 
 ### Wiring diagram so far:
 

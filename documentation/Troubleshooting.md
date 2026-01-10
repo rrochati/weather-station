@@ -6,10 +6,10 @@ The wiring sucks. Make shure it is wright:
 #### Wind Vane RJ 11 ---> RJ45 breakout ####
     | RJ11 Pin| Wire Color | Function                | Connection *        | RJ45 breakout pin | Dupont color |
     |---------|------------|-------------------------| ------------------- | ----------------- | ------------ |
-    | Pin 1	  | Black      | VCC (Power)             | 3.3V                | Pin 3	           | Black    |
-    | Pin 2	  | Red        | Wind Speed (Anemometer) | Pi Pin 11 (GPIO 17) | Pin 4	           | Red           |
-    | Pin 3	  | Yellow     | Ground                  | GND                 | Pin 5             | Yellow        |
-    | Pin 4	  | Green	   | Wind Vane Signal        | DFR0553 A0          | Pin 6             | Green      |
+    | Pin 1	  | Black      | VCC (Power)             | 3.3V                | Pin 3	           | Red          |
+    | Pin 2	  | Red        | Wind Speed (Anemometer) | Pi Pin 11 (GPIO 17) | Pin 4	           | Purple       |
+    | Pin 3	  | Yellow     | Ground                  | GND                 | Pin 5             | Black        |
+    | Pin 4	  | Green	   | Wind Vane Signal        | DFR0553 A0          | Pin 6             | Orange       |
 ***Check detailed instructions for connections***
 
 The last problem with anemo was the pull-up that was not enabled
