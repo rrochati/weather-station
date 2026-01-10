@@ -17,10 +17,10 @@ But, due to our RJ breakout unusual color pattern we already discussed on Anemom
 
     | RJ11 Pin| Wire Color | Function                | Connection                     | Leroy conector | DuPont Wire soldered |
     |---------|------------|-------------------------| ------------------------------ | -------------- | -------------------- |
-    | Pin 1	  | Black      | VCC (Power)             | Connect to 3.3V                | Yellow         | Yellow Female        |
-    | Pin 2	  | Red        | Wind Speed (Anemometer) | Connect to Pi Pin 11 (GPIO 17) | Green          | Green Female         |
-    | Pin 3	  | Yellow     | Ground                  | Connect to GND                 | Red            | Purple Male          |
-    | Pin 4	  | Green	   | Wind Vane Signal        | Connect to DFR0553 A0          | Black          | Brown Male           |
+    | Pin 2	  | Black      | VCC (Power)             | Connect to 3.3V                | Yellow         | Yellow Female        |
+    | Pin 3	  | Red        | Wind Speed (Anemometer) | Connect to Pi Pin 11 (GPIO 17) | Green          | Green Female         |
+    | Pin 4	  | Yellow     | Ground                  | Connect to GND                 | Red            | Purple Male          |
+    | Pin 5	  | Green	   | Wind Vane Signal        | Connect to DFR0553 A0          | Black          | Brown Male           |
 
     **The Pins 1 and 4 function confirmed.**
 
