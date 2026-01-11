@@ -48,7 +48,10 @@ class RainBucket:
         
         # Track last tip time for software debounce
         self.last_tip_time = 0
-        self.debounce_seconds = 0.02  # 20ms debounce
+        self.debounce_seconds = 0.15  # 150ms debounce (allows ~6-7 tips/second max)
+        
+        # Track last GPIO state for polling (fallback)
+        self.last_state = 1  # Assume HIGH initially (reed switch open)
         
         logger.info(f"🌧️ Rain bucket initialized on GPIO{self.pin} ({self.mm_per_tip}mm per tip)")
     
@@ -88,6 +91,23 @@ class RainBucket:
                 # alert is a tuple: (pin, level, timestamp_nanoseconds)
                 pin, level, timestamp_ns = alert
                 
+                # Only process falling edges (HIGH to LOW - reed switch closes)
+                if level == 0:
+                    # Get current time for debouncing
+                    current_time = time.time()
+                    
+                    # Apply software debounce
+                    if (current_time - self.last_tip_time) >= self.debounce_seconds:
+                        self._tip_detected()
+                        self.last_tip_time = current_time
+                    else:
+                        logger.debug(f"⏱️ Rain tip ignored (debounce): {(current_time - self.last_tip_time)*1000:.1f}ms since last tip")
+                        
+        except Exception as e:
+            logger.error(f"❌ Error checking for rain tips: {e}")
+    
+    def _check_daily_reset(self):
+        """Check if we need to reset daily counter"""
         current_date = datetime.now().date()
         if current_date > self.last_reset_date:
             logger.info(f"🌅 New day detected, resetting daily rain counter (was {self.daily_tips} tips = {self.daily_tips * self.mm_per_tip:.3f}mm)")
@@ -127,13 +147,13 @@ class RainBucket:
             reset_counter (bool): If True, reset the interval counter
             
         Returns:
-          Check for any pending tip events
-        self.check
+            dict: Rain data including tips and mm measurements
+        """
+        # Check for any pending tip events
+        self.check_for_tips()
+        
         # Check for new day
         self._check_daily_reset()
-        
-        # Poll for any recent tips (backup method)
-        self._poll_for_tips()
         
         # Calculate totals
         interval_mm = self.interval_tips * self.mm_per_tip
