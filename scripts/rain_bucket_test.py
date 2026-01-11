@@ -44,7 +44,7 @@ def test_rain_bucket_basic():
                 print(f"      Daily total: {data['daily_mm']:.3f}mm ({data['daily_tips']} tips)")
                 last_tips = data['interval_tips']
             
-            time.sleep(0.5)  # Check every 500ms
+            time.sleep(0.1)  # Check every 100ms for better responsiveness
         
         # Final summary
         final_data = rain_bucket.get_data(reset_counter=True)

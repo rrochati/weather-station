@@ -33,6 +33,7 @@ class RainBucket:
         """
         self.pin = pin
         self.gpio_handle = None
+        self.callback_id = None
         
         # SparkFun Weather Meter Kit specification
         self.mm_per_tip = 0.2794  # mm per tip (from documentation)
@@ -45,6 +46,10 @@ class RainBucket:
         # Daily reset tracking
         self.last_reset_date = datetime.now().date()
         
+        # Track last tip time for software debounce
+        self.last_tip_time = 0
+        self.debounce_seconds = 0.02  # 20ms debounce
+        
         logger.info(f"🌧️ Rain bucket initialized on GPIO{self.pin} ({self.mm_per_tip}mm per tip)")
     
     def setup(self):
@@ -56,28 +61,33 @@ class RainBucket:
             
             # Claim pin as input with pull-up
             lgpio.gpio_claim_input(self.gpio_handle, self.pin, lgpio.SET_PULL_UP)
-            lgpio.gpio_set_debounce_micros(self.gpio_handle, self.pin, 200000)  # 200ms debounce
             logger.info(f"✅ Rain bucket GPIO{self.pin} claimed as input with pull-up enabled")
             
-            # Set up callback for falling edge detection
-            self._setup_callback()
+            # Set up callback for falling edge detection (reed switch closes)
+            self.callback_id = lgpio.gpio_claim_alert(self.gpio_handle, self.pin, lgpio.FALLING_EDGE)
+            logger.info(f"✅ Rain bucket interrupt callback set up on GPIO{self.pin}")
             
         except Exception as e:
             logger.error(f"❌ Error setting up rain bucket GPIO: {e}")
             raise
     
-    def _setup_callback(self):
-        """Set up interrupt callback for rain bucket tips"""
+    def check_for_tips(self):
+        """Check for rain bucket tip events using interrupt system"""
+        if self.gpio_handle is None or self.callback_id is None:
+            return
+        
         try:
-            # For lgpio, we'll use polling instead of callbacks for simplicity
-            # Store the last state for edge detection
-            self.last_state = lgpio.gpio_read(self.gpio_handle, self.pin)
-            logger.info("✅ Rain bucket monitoring started")
-        except Exception as e:
-            logger.error(f"❌ Error setting up rain bucket callback: {e}")
-    
-    def _check_daily_reset(self):
-        """Reset daily counter if it's a new day"""
+            # Read all pending alerts
+            while True:
+                # Get alert with timeout of 0 (non-blocking)
+                alert = lgpio.gpio_read_alert(self.gpio_handle, self.pin, 0)
+                
+                if alert is None:
+                    break  # No more alerts
+                
+                # alert is a tuple: (pin, level, timestamp_nanoseconds)
+                pin, level, timestamp_ns = alert
+                
         current_date = datetime.now().date()
         if current_date > self.last_reset_date:
             logger.info(f"🌅 New day detected, resetting daily rain counter (was {self.daily_tips} tips = {self.daily_tips * self.mm_per_tip:.3f}mm)")
@@ -117,8 +127,8 @@ class RainBucket:
             reset_counter (bool): If True, reset the interval counter
             
         Returns:
-            dict: Rain data with interval and daily totals
-        """
+          Check for any pending tip events
+        self.check
         # Check for new day
         self._check_daily_reset()
         
@@ -187,7 +197,10 @@ def test_rain_bucket():
     rain_bucket = RainBucket(pin=27)
     rain_bucket.setup()
     
-    try:
+    try:# No need to explicitly free alert, it's freed when chip is closed
+                lgpio.gpiochip_close(self.gpio_handle)
+                self.gpio_handle = None
+                self.callback_id = None
         print("📊 Monitoring for 30 seconds. Try triggering the rain bucket...")
         start_time = time.time()
         

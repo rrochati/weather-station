@@ -14,23 +14,23 @@ The rain bucket is part of the SparkFun Weather Meter Kit and uses a tipping buc
 
 ## 🔌 Wiring
 
-Based on the SparkFun Weather Meter Kit documentation:
+When looking at the connector from the brass connection perspective:
 
-| RJ11 Pin | Wire Color | Function | Pi Connection |
-|----------|------------|----------|---------------|
-| Pin 1    | Black      | VCC (unused for rain) | Not connected |
-| Pin 2    | Red        | Anemometer (unused) | Not connected |
-| Pin 3    | Yellow     | Ground | Pi Pin 6 (GND) |
-| Pin 4    | Green      | Rain Signal | Pi Pin 13 (GPIO27) |
+| RJ11 Pin | Wire Color | Function    | Pi Connection      |
+|----------|------------|-------------|--------------------|
+| Pin 1    | N/A        | N/A         | Not connected      |
+| Pin 2    | Green      | Ground      | Pi Pin 6 (GND)     |
+| Pin 3    | Red        | Rain Signal | Pi Pin 13 (GPIO27) |
+| Pin 4    | N/A        | N/A         | Not connected      |
 
-### Your Specific Wiring (with Leroy Connector)
+### Your Specific Wiring
 
 According to your color mapping:
 
-| SparkFun Wire | Leroy Connector | DuPont Wire | Pi Connection |
-|---------------|-----------------|-------------|---------------|
-| Green (Rain Signal) | Black | TBD | GPIO27 (Pin 13) |
-| Yellow (Ground) | Red | Purple | GND (Pin 6) |
+| SparkFun Wire        | RJ45 Breakout | DuPont Wire | Pi Connection   |
+|----------------------|---------------|-------------|-----------------|
+| Green (Ground)       | Pin 4         | Black       | GPIO27 (Pin 13) |
+| Yellow (Rain Signal) | Pin 5         | Brown       | GND Rail        |
 
 ## 🛠️ GPIO Configuration
 
