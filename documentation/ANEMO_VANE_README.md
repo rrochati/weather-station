@@ -1,4 +1,4 @@
-# SparkFun Weather Meter Kit Wind Vane Setup
+# SparkFun Weather Meter Kit Anemometer and Wind Vane Setup
 
 ## 🧩 Kit Overview
 
@@ -12,10 +12,9 @@
 - DuPont Cables
 - 1 breadboard
 
-### SparkFun Weather Meter Kit Wind Vane Wiring
-- The SparkFun Weather Meter Kit wind vane uses a resistor network that requires connection to your DFR0553 (ADS1115) analog input for reading wind direction.
+### SparkFun Weather Meter Kit Anemometer Wind Vane Wiring
 
-- RJ11 Connector Pinout (Wind Vane)
+- RJ11 Connector Pinout
 The SparkFun Weather Meter Kit uses RJ11 connectors that does not follow the standard pinout.
 
 
@@ -86,7 +85,17 @@ Once you have the wire identified on a test breakout test the vane and anemomete
 3. Test the vane:
     - Switch to folder weather-station/scripts/windvane
     - Cry on your bed
+    - The vane is only working on the multimeter, so let's disable it on code and return for this later.
 
+#### For Long Cable Run - Minimal Protection ####
+
+At Pi End:
+- 100nF capacitor: GPIO17 to GND (debounce/filter)
+- Ferrite choke on cable (reduces EMI)
+
+At Sensor End:  
+- Keep connections weatherproof
+- Ensure good ground connection
 
 ### Wiring diagram so far:
 
@@ -98,6 +107,13 @@ Once you have the wire identified on a test breakout test the vane and anemomete
 
     <img src="images/breadboard_wiring.png" alt="BreadBoard pinout diagram showing connections for BME280, DFR0553, Anemometer and Wind vane" width="800"> 
 
+
+#### 🔍 What is "Bounce" in Switches? and why it's important for your anemometer setup ####
+- If you are interested on details, check **ANEMOMETER_DETAILS.md**
+
+
+
+- The SparkFun Weather Meter Kit wind vane uses a resistor network that requires connection to your DFR0553 (ADS1115) analog input for reading wind direction.
 
 ### Circuit Diagram
 ```bash
