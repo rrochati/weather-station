@@ -218,9 +218,9 @@ def test_rain_bucket():
     rain_bucket.setup()
     
     try:# No need to explicitly free alert, it's freed when chip is closed
-                lgpio.gpiochip_close(self.gpio_handle)
-                self.gpio_handle = None
-                self.callback_id = None
+        lgpio.gpiochip_close(self.gpio_handle)
+        self.gpio_handle = None
+        self.callback_id = None
         print("📊 Monitoring for 30 seconds. Try triggering the rain bucket...")
         start_time = time.time()
         
