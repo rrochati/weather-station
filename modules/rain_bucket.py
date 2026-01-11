@@ -33,7 +33,6 @@ class RainBucket:
         """
         self.pin = pin
         self.gpio_handle = None
-        self.callback_id = None
         
         # SparkFun Weather Meter Kit specification
         self.mm_per_tip = 0.2794  # mm per tip (from documentation)
@@ -50,7 +49,7 @@ class RainBucket:
         self.last_tip_time = 0
         self.debounce_seconds = 0.15  # 150ms debounce (allows ~6-7 tips/second max)
         
-        # Track last GPIO state for polling (fallback)
+        # Track last GPIO state for edge detection
         self.last_state = 1  # Assume HIGH initially (reed switch open)
         
         logger.info(f"🌧️ Rain bucket initialized on GPIO{self.pin} ({self.mm_per_tip}mm per tip)")
@@ -66,42 +65,37 @@ class RainBucket:
             lgpio.gpio_claim_input(self.gpio_handle, self.pin, lgpio.SET_PULL_UP)
             logger.info(f"✅ Rain bucket GPIO{self.pin} claimed as input with pull-up enabled")
             
-            # Set up callback for falling edge detection (reed switch closes)
-            self.callback_id = lgpio.gpio_claim_alert(self.gpio_handle, self.pin, lgpio.FALLING_EDGE)
-            logger.info(f"✅ Rain bucket interrupt callback set up on GPIO{self.pin}")
+            # Read initial state
+            self.last_state = lgpio.gpio_read(self.gpio_handle, self.pin)
+            logger.info(f"✅ Rain bucket setup complete (initial state: {self.last_state})")
             
         except Exception as e:
             logger.error(f"❌ Error setting up rain bucket GPIO: {e}")
             raise
     
     def check_for_tips(self):
-        """Check for rain bucket tip events using interrupt system"""
-        if self.gpio_handle is None or self.callback_id is None:
+        """Check for rain bucket tip events using GPIO polling"""
+        if self.gpio_handle is None:
             return
         
         try:
-            # Read all pending alerts
-            while True:
-                # Get alert with timeout of 0 (non-blocking)
-                alert = lgpio.gpio_read_alert(self.gpio_handle, self.pin, 0)
+            # Read current GPIO state
+            current_state = lgpio.gpio_read(self.gpio_handle, self.pin)
+            
+            # Detect falling edge (HIGH to LOW transition - reed switch closes)
+            if current_state == 0 and self.last_state == 1:
+                # Get current time for debouncing
+                current_time = time.time()
                 
-                if alert is None:
-                    break  # No more alerts
-                
-                # alert is a tuple: (pin, level, timestamp_nanoseconds)
-                pin, level, timestamp_ns = alert
-                
-                # Only process falling edges (HIGH to LOW - reed switch closes)
-                if level == 0:
-                    # Get current time for debouncing
-                    current_time = time.time()
-                    
-                    # Apply software debounce
-                    if (current_time - self.last_tip_time) >= self.debounce_seconds:
-                        self._tip_detected()
-                        self.last_tip_time = current_time
-                    else:
-                        logger.debug(f"⏱️ Rain tip ignored (debounce): {(current_time - self.last_tip_time)*1000:.1f}ms since last tip")
+                # Apply software debounce
+                if (current_time - self.last_tip_time) >= self.debounce_seconds:
+                    self._tip_detected()
+                    self.last_tip_time = current_time
+                else:
+                    logger.debug(f"⏱️ Rain tip ignored (debounce): {(current_time - self.last_tip_time)*1000:.1f}ms since last tip")
+            
+            # Update last state
+            self.last_state = current_state
                         
         except Exception as e:
             logger.error(f"❌ Error checking for rain tips: {e}")
@@ -114,19 +108,7 @@ class RainBucket:
             self.daily_tips = 0
             self.last_reset_date = current_date
     
-    def _poll_for_tips(self):
-        """Poll GPIO pin for rain bucket tips (fallback method)"""
-        try:
-            current_state = lgpio.gpio_read(self.gpio_handle, self.pin)
-            
-            # Detect falling edge (HIGH to LOW transition)
-            if current_state == 0 and self.last_state == 1:
-                self._tip_detected()
-            
-            self.last_state = current_state
-            
-        except Exception as e:
-            logger.error(f"❌ Error polling rain bucket: {e}")
+
     
     def _tip_detected(self):
         """Handle rain bucket tip detection"""
