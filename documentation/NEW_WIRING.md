@@ -34,6 +34,10 @@
 This RJ11 to RJ45 is tricky. My suggestion, bring the whole kit mounted inside (including the stand), next to you work bench and test with the multimeter.
 Check ANEMO_VANE_README.md for details
 
+### Procedure
+#### For each connection, test continuity using the multimeter
+Trust me, it will save you a lot of troubleshoot time
+
 #### RJ45 breakout 1   ---> Breadboard/Pi
     | RJ45 breakout pin| DuPont Cable | Function      | Connect to   |
     |------------------|--------------| ------------- | ------------ |
@@ -59,10 +63,6 @@ Check ANEMO_VANE_README.md for details
     | Pin 8	           | Brown        | Rain Signal   |     ---      |            |
      * You will need to iron sold these
 
-### Procedure
-#### For each connection, test continuity using the multimeter
-Trust me, it will save you a lot of troubleshoot time
-
 
 #### RJ45 breakout 3 (Anemometer/Vane)
 **SparkFun Weather Meter RJ11 Connector Pinout**
@@ -70,7 +70,6 @@ The Connector Pinout is different from the RJ11 standard. Check Check ANEMO_VANE
 
 When looking at the contact part of the connector: Green, Yellow, Red, Black (pins 1-4)
 
-    **RJ11 to RJ45 Mapping:**
     | RJ11 Pin | Wire Color | Function           | RJ45 Pin | CAT6 Color   | Notes                         |
     |----------|------------|--------------------|----------|--------------|-------------------------------|
     | Pin 1    | Green      | Wind Vane Signal   | Pin 3    | White/Blue   | Analog voltage, To DFR0553 A0 |

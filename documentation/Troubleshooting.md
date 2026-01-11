@@ -23,3 +23,7 @@ The last problem with anemo was the pull-up that was not enabled
 ### New wiring
 The new wiring introduced a lot of new problems.
 It is documented under the wiring section.
+
+### Connections
+Whenever connect os disconnect wires, turn the Pi of.
+The GPIO goes crazy and stop working properly
