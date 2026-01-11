@@ -119,3 +119,54 @@ Capacitor: 100nF (0.1μF) ceramic capacitor
 - Package: Through-hole or 0805 SMD
 - Cost: €0.05-0.10
 ```
+
+### **Long Cable Troubleshooting:**
+```bash
+If you see issues:
+
+False pulses (too many counts):
+- Add 100nF capacitor for debouncing
+- Increase bouncetime in software (try 20-50ms)
+- Check for loose connections
+
+Missed pulses (too few counts):
+- Verify good ground connection
+- Check cable continuity
+- Ensure pullup is working (measure voltage)
+
+No pulses at all:
+- Test continuity with multimeter
+- Check GPIO pin assignment
+- Verify internal pullup is enabled
+```
+
+
+## 💡 **Anemometer-Specific Tips:**
+
+From **Weather Meter Hookup Guide**:
+     "The wind moves the cups on the anemometer, which in turn, rotate a enclosed magnet. The magnet closes a reed switch on each rotation, which is reflected on the output. You can measure this on the two inner conductors of the RJ11 connector (pins 2 and 3), using a digital counter or interrupt pins on your microcontroller. To convert this into a functional wind speed, use the conversion of 1.492 mph = 1 switch closure/second. For those in metric land, this is 2.4 km/h."
+
+So to convert 2.4 km/h use the following table: 
+| Unit | Operation | Value |
+| ---- | --------- | ----- |
+| m/s | / | 0.6667 |
+| km/h | TBD 0.27778 |
+| mph | TBD | 1.49129 |
+| knots | TBD| 1.2959 |
+
+And to convert back multiply to:
+| Unit  | Equivalent of 1 m/s |
+| ----- | ------------------- |
+| km/h  | 3.6 |
+| mph   | 2.237 |
+| knots | 1.944 |
+
+
+
+## 📚 References
+
+- [Weather Meter Kit product page](https://www.sparkfun.com/weather-meter-kit.html)
+- [Weather Meter Hookup Guide](https://learn.sparkfun.com/tutorials/weather-meter-hookup-guide)
+- [Weather Sensor Assembly](https://cdn.sparkfun.com/assets/8/4/c/d/6/Weather_Sensor_Assembly_Updated.pdf)
+- [Datasheet](https://cdn.sparkfun.com/assets/d/1/e/0/6/DS-15901-Weather_Meter.pdf)
+- [Arduino Library](https://github.com/sparkfun/SparkFun_Weather_Meter_Kit_Arduino_Library)

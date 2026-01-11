@@ -30,7 +30,7 @@ except ImportError:
 # -------------------------------------------------
 
 # Voltage tolerance for direction matching (volts)
-TOLERANCE = 0.5
+TOLERANCE = 0.05
 
 # Wind direction mapping based on your actual hardware calibration
 # Custom calibrated values from your SparkFun Weather Kit + 10kΩ voltage divider
