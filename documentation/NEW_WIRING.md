@@ -79,14 +79,14 @@ When looking at the contact part of the connector: Green, Yellow, Red, Black (pi
     * It should have be the green, but it is not working
 
 
-#### RJ45 breakout 4 (Rain Bucket) (tbd)
+#### RJ45 breakout 4 (Rain Bucket)
     | RJ45 breakout pin| CAT6 Color   | Function    | Notes           |
     |------------------|--------------| ------------| --------------- |
     | Pin 1	           |              |             |                 |
     | Pin 2	           |              |             |                 |
     | Pin 3	           |              |             |                 |
-    | Pin 4	           | Brown*       | Rain Signal |                 |
-    | Pin 5	           | Orange*      | GND         | From breakout 3 |
+    | Pin 4	           | Orange*      | GND         | From breakout 3 |
+    | Pin 5	           | Brown*       | Rain Signal |                 |
     | Pin 6	           |              |             |                 |
     | Pin 7	           |              |             |                 |
     | Pin 8	           |              |             |                 |
