@@ -93,6 +93,7 @@ ads = ADS.ADS1115(i2c)
 ads.gain = 1  # ±4.096V
 ```
 
+https://wiki.dfrobot.com/Gravity__I2C_ADS1115_16-Bit_ADC_Module_Arduino_%26_Raspberry_Pi_Compatible__SKU__DFR0553#More_Documents
 
 
 

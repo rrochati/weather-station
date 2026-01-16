@@ -70,28 +70,29 @@ The Connector Pinout is different from the RJ11 standard. Check Check ANEMO_VANE
 
 When looking at the contact part of the connector: Green, Yellow, Red, Black (pins 1-4)
 
-    | RJ11 Pin | Wire Color | Function           | RJ45 Pin | CAT6 Color   | Notes                         |
-    |----------|------------|--------------------|----------|--------------|-------------------------------|
-    | Pin 1    | Green      | Wind Vane Signal   | Pin 3    | White/Blue   | Analog voltage, To DFR0553 A0 |
-    | Pin 2    | Yellow     | Ground (GND)       | Pin 4    | Orange       | Shared ground                 |
-    | Pin 3    | Red        | Anemometer Signal  | Pin 5    | White/Brown* | Reed switch, to GPIO17        |
-    | Pin 4    | Black      | Power (3.3V)       | Pin 6    | White/Orange | Powers resistors              |
-    * It should have be the green, but it is not working
+    | RJ11 Pin | Wire Color | Function           | RJ45 Pin | CAT6 Color   | Notes                      |
+    |----------|------------|--------------------|----------|--------------|----------------------------|
+    | Pin 1    | Green      | Ground (GND)       | Pin 3    | Orange       | Shared ground              |
+    | Pin 2    | Yellow     | Anemometer Signal  | Pin 4    | White/Brown  | Reed switch, to GPIO17     |
+    | Pin 3    | Red        | Power (3.3V)       | Pin 5    | White/Orange | Powers resistors           |
+    | Pin 4    | Black      | Wind Vane Signal   | Pin 6    | White/Blue   | Analog voltage, To DFR0553 |
+
+ Wind Vane Signal   
 
 During this set up I had a few conectivity problems. The last one is about grounding.
-The continuity test from CAT6 GND wire (Orange) to protoboard is fine.
+The continuity test from CAT6 GND wire (Orange) to breadboard is fine.
 This raises questions about Breaktou 3 connections to Orange wire.
 To dimiss this doubt I got a peace of RJ11 cable (about 20 cm) with 4 wires and connector. Decaped a good part of rubber nad a part of each wire.
 Connect it to Breakout 3 and test continuity.
 
-    | RJ11 Pin | Wire Color | Function           | RJ11 wire| Color  |
-    |----------|------------|--------------------|----------|--------|
-    | Pin 1    | Green      | Wind Vane Signal   | Pin 1    | Yellow |
-    | Pin 2    | Yellow     | Ground (GND)       | Pin 2    | Blue   |
-    | Pin 3    | Red        | Anemometer Signal  | Pin 3    | Rosé   |
-    | Pin 4    | Black      | Power (3.3V)       | Pin 4    | White  |
+    | RJ11 Pin | Wire Color | RJ11 wire| Color  |
+    |----------|------------|----------|--------|
+    | Pin 1    | Green      | Pin 1    | Yellow |
+    | Pin 2    | Yellow     | Pin 2    | Blue   |
+    | Pin 3    | Red        | Pin 3    | Rosé   |
+    | Pin 4    | Black      | Pin 4    | White  |
 
-All have continuity.
+All have continuity, but the vane does not work.
 Cry in your bed
 
 #### RJ45 breakout 4 (Rain Bucket)

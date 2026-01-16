@@ -25,8 +25,7 @@ print()
 i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS1115(i2c)
 ads.gain = 1
-#chan0 = AnalogIn(ads, 0)
-chan0 = AnalogIn(ads, 1)
+chan0 = AnalogIn(ads, 0)
 
 print("=" * 70)
 print("TEST 1: Baseline Reading (with everything connected)")

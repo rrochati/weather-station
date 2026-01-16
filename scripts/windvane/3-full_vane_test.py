@@ -76,9 +76,7 @@ def setup_ads1115():
             ads.gain = 1  # ±4.096V range (suitable for 3.3V system)
             
             # Wind vane on A0 (channel 0)
-            #wind_vane = AnalogIn(ads, 0)  # Channel 0 = A0
-            # Wind vane on A1 (channel 1)
-            wind_vane = AnalogIn(ads, 1)  # Channel 1 = A1
+            wind_vane = AnalogIn(ads, 0)  # Channel 0 = A0
             
             print("✅ ADS1115 initialized successfully (CircuitPython)")
             print(f"✅ Wind vane connected to A1")

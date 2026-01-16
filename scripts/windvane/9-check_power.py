@@ -15,8 +15,7 @@ print("=" * 60)
 i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS1115(i2c)
 ads.gain = 1  # ±4.096V range
-#chan = AnalogIn(ads, 0)  # A0 channel
-chan = AnalogIn(ads, 1)  # A1 channel
+chan = AnalogIn(ads, 0)  # A0 channel
 
 print("\n📋 This test helps identify if the wind vane is getting power")
 print("   Expected behavior:")
