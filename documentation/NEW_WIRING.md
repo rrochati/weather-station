@@ -57,10 +57,10 @@ Trust me, it will save you a lot of troubleshoot time
     | Pin 2	           | Orange       | GND           | DuPont Black | BME280 +   |
     | Pin 3	           | White/Green  | GPIO3 (Clock) | DuPont Blue  | BME280 SCL |
     | Pin 4	           | Blue         | GPIO2 (Data)  | DuPont Green | BME280 SDA |
-    | Pin 5	           | White/Blue   | Vane Signal   |     ---      | DFR0553 A0 |
-    | Pin 6	           | Green        | Not in use    |     ---      |            |
-    | Pin 7	           | White/Brown  | Anemo Signal  |     ---      | GPIO17     |
-    | Pin 8	           | Brown        | Rain Signal   |     ---      |            |
+    | Pin 5	           | White/Blue   | Vane Signal   | DuPont Purple| DFR0553 A0 |
+    | Pin 6	           | Green        | Not in use    | DuPont Orange|            |
+    | Pin 7	           | White/Brown  | Anemo Signal  | DuPont White | GPIO17     |
+    | Pin 8	           | Brown        | Rain Signal   | DuPont Brown |            |
      * You will need to iron sold these
 
 
@@ -78,6 +78,21 @@ When looking at the contact part of the connector: Green, Yellow, Red, Black (pi
     | Pin 4    | Black      | Power (3.3V)       | Pin 6    | White/Orange | Powers resistors              |
     * It should have be the green, but it is not working
 
+During this set up I had a few conectivity problems. The last one is about grounding.
+The continuity test from CAT6 GND wire (Orange) to protoboard is fine.
+This raises questions about Breaktou 3 connections to Orange wire.
+To dimiss this doubt I got a peace of RJ11 cable (about 20 cm) with 4 wires and connector. Decaped a good part of rubber nad a part of each wire.
+Connect it to Breakout 3 and test continuity.
+
+    | RJ11 Pin | Wire Color | Function           | RJ11 wire| Color  |
+    |----------|------------|--------------------|----------|--------|
+    | Pin 1    | Green      | Wind Vane Signal   | Pin 1    | Yellow |
+    | Pin 2    | Yellow     | Ground (GND)       | Pin 2    | Blue   |
+    | Pin 3    | Red        | Anemometer Signal  | Pin 3    | Rosé   |
+    | Pin 4    | Black      | Power (3.3V)       | Pin 4    | White  |
+
+All have continuity.
+Cry in your bed
 
 #### RJ45 breakout 4 (Rain Bucket)
     | RJ45 breakout pin| CAT6 Color   | Function    | Notes           |

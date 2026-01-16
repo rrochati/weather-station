@@ -100,7 +100,9 @@ class WindVane:
                 self.ads.gain = 1  # ±4.096V range (suitable for 3.3V system)
                 
                 # Wind vane on A0 (channel 0)
-                self.wind_vane = AnalogIn(self.ads, 0)  # Channel 0 = A0
+                #self.wind_vane = AnalogIn(self.ads, 0)  # Channel 0 = A0
+                # Wind vane on A1 (channel 1)
+                self.wind_vane = AnalogIn(self.ads, 1)  # Channel 1 = A1
                 
                 logger.info("✅ ADS1115 initialized successfully (CircuitPython)")
                 logger.info(f"✅ Wind vane connected to A0")

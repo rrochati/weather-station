@@ -6,7 +6,8 @@ from adafruit_ads1x15.analog_in import AnalogIn
 i2c = busio.I2C(board.SCL, board.SDA)
 ads = ADS1115(i2c)
 ads.gain = 1
-chan = AnalogIn(ads, 0)
+#chan = AnalogIn(ads, 0)
+chan = AnalogIn(ads, 1)
 
 print("IMPORTANT TEST:")
 print("===============")

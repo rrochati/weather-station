@@ -131,9 +131,13 @@ pip install adafruit-circuitpython-ads1x15
 
 ## Calibrate your readings
 
+The vane have marks for North, South, East and West, so make sure to align the North mark with compass North.
+
+It is also help if you mark the other directions on the vane fixed part for calibration and use a elastic band to hold the movel part in the desired direction.
+
 Use script scripts/3-full_vane_test.py
 
-The one that worked better for me is different from spec. Maybe the spec refer to south emisphere readings?
+The one that worked better for me is different from spec. Maybe the spec refer to another emisphere readings?
 
 # Voltage tolerance for direction matching (volts)
 TOLERANCE = 0.05

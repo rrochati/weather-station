@@ -89,7 +89,8 @@ print("   • Connect wind vane → Should vary 0.25V-3.0V when rotated")
 print("\n1️⃣  Connect A0 to GND")
 input("   Press Enter when ready...")
 
-chan0 = AnalogIn(ads, 0)
+#chan0 = AnalogIn(ads, 0)
+chan0 = AnalogIn(ads, 1)
 readings = []
 for i in range(5):
     v = chan0.voltage
