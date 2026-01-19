@@ -79,7 +79,7 @@ def setup_ads1115():
             wind_vane = AnalogIn(ads, 0)  # Channel 0 = A0
             
             print("✅ ADS1115 initialized successfully (CircuitPython)")
-            print(f"✅ Wind vane connected to A0")
+            print(f"✅ Wind vane connected to A1")
             print(f"✅ Voltage range: ±4.096V")
             
         else:
@@ -232,31 +232,96 @@ def voltage_calibration_helper():
         
         # Take multiple readings for accuracy
         voltages = []
-        print("   Taking 10 readings...")
-        for j in range(10):
+        print("   Taking 50 readings (wait for stability)...")
+        for j in range(50):
             if USE_CIRCUITPYTHON:
                 voltage = wind_vane.voltage
             else:
                 raw_value = wind_vane.read_adc(0, gain=1)
                 voltage = raw_value * 4.096 / 32767.0
             voltages.append(voltage)
-            print(f"   Reading {j+1}: {voltage:.4f}V")
-            time.sleep(0.5)
+            if j % 10 == 0:  # Show progress every 10 readings
+                print(f"   Progress: {j+1}/50 - Current: {voltage:.4f}V")
+            time.sleep(0.2)  # Faster sampling
         
+        # Calculate statistics
         avg_voltage = sum(voltages) / len(voltages)
-        calibration_data[avg_voltage] = direction
+        min_voltage = min(voltages)
+        max_voltage = max(voltages)
+        voltage_range = max_voltage - min_voltage
         
-        print(f"   ✅ Average: {avg_voltage:.4f}V for {direction}° ({name})")
+        # Calculate standard deviation
+        variance = sum((v - avg_voltage) ** 2 for v in voltages) / len(voltages)
+        std_dev = variance ** 0.5
+        
+        calibration_data[avg_voltage] = {
+            'direction': direction,
+            'name': name,
+            'avg': avg_voltage,
+            'min': min_voltage,
+            'max': max_voltage,
+            'range': voltage_range,
+            'std_dev': std_dev
+        }
+        
+        # Show quality indicators
+        stability_icon = "✅" if voltage_range < 0.02 else "⚠️"
+        print(f"   {stability_icon} Average: {avg_voltage:.4f}V | Range: {voltage_range:.4f}V | Std Dev: {std_dev:.4f}V")
+        if voltage_range > 0.02:
+            print(f"   ⚠️  WARNING: Unstable readings! Check connections.")
     
     print("\n" + "="*60)
     print("📋 CALIBRATION RESULTS:")
     print("="*60)
+    
+    # Check for duplicate voltages
+    voltage_groups = {}
+    for avg_v, data in calibration_data.items():
+        rounded_v = round(avg_v, 3)  # Round to 3 decimal places
+        if rounded_v not in voltage_groups:
+            voltage_groups[rounded_v] = []
+        voltage_groups[rounded_v].append(data)
+    
+    # Warn about duplicates
+    duplicates_found = False
+    for voltage, group in voltage_groups.items():
+        if len(group) > 1:
+            duplicates_found = True
+            print(f"\n🚨 DUPLICATE VOLTAGE: {voltage:.3f}V detected for:")
+            for data in group:
+                print(f"   - {data['direction']:6.1f}° ({data['name']})")
+    
+    if duplicates_found:
+        print("\n⚠️  HARDWARE PROBLEM DETECTED!")
+        print("   Multiple directions have the same voltage. Check:")
+        print("   1. Wind vane internal resistors (may be damaged)")
+        print("   2. Pull-up resistor value (should be 10kΩ)")
+        print("   3. Wiring connections (loose or corroded)")
+        print("   4. Power supply voltage (should be stable 3.3V)")
+        print("   5. Reed switch alignment in wind vane")
+    
+    print("\n" + "="*60)
     print("Copy this dictionary to your code:")
     print()
     print("VOLTAGE_TO_DIR = {")
-    for voltage, direction in sorted(calibration_data.items()):
-        print(f"    {voltage:.3f}: {direction:.1f},")
+    for voltage, data in sorted(calibration_data.items()):
+        stability_note = " # UNSTABLE" if data['range'] > 0.02 else ""
+        print(f"    {data['avg']:.3f}: {data['direction']:.1f},  # {data['name']}{stability_note}")
     print("}")
+    
+    print("\n" + "="*60)
+    print("📊 QUALITY REPORT:")
+    print("="*60)
+    stable_count = sum(1 for d in calibration_data.values() if d['range'] < 0.02)
+    print(f"Stable readings: {stable_count}/16")
+    print(f"Duplicate voltages: {sum(1 for g in voltage_groups.values() if len(g) > 1)}")
+    print(f"Unique voltages: {len([g for g in voltage_groups.values() if len(g) == 1])}/16")
+    
+    if len([g for g in voltage_groups.values() if len(g) == 1]) < 14:
+        print("\n❌ CALIBRATION FAILED: Too many duplicate voltages")
+        print("   Hardware repair required before proceeding.")
+    else:
+        print("\n✅ Calibration quality acceptable")
 
 def main():
     """Main test menu"""

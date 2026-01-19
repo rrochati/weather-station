@@ -10,6 +10,7 @@ from modules.openweathermap import print_detailed_weather_data, print_air_qualit
 from modules.database import WeatherDatabase
 from modules.anemometer import start_gpio, measure_wind_speed
 from modules.windvane import WindVane
+from modules.rain_bucket import RainBucket
 
 LOG_FILE=os.getenv('LOG_FILE', '/home/rrocha/logs/weather_station.log')
 
@@ -199,8 +200,12 @@ class WeatherStationManager:
         start_gpio()
         wind_read_interval = 60  # seconds
         
-        vane= WindVane()
+        vane = WindVane()
         vane.setup_ads1115()
+        
+        # Initialize rain bucket
+        rain_bucket = RainBucket(pin=27)  # GPIO 27 for rain bucket
+        rain_bucket.setup()
         
         while True:
             try:
@@ -218,12 +223,17 @@ class WeatherStationManager:
                 
                 voltage, direction, direction_name, confidence, voltage_diff = vane.read_wind_direction()
                 
+                # Read rain data (this resets the interval counter)
+                rain_data = rain_bucket.get_data(reset_counter=True)
+                rain_interval_mm = rain_data['interval_mm']
+                
                 reading_count += 1
                 
                 # Log sensor readings
                 logger.info(f"Internal Sensors: T={temperature:.2f}°C, H={humidity:.2f}%, P={pressure:.2f}hPa, Alt={altitude:.1f}m (SLP={self.current_slp:.2f}hPa)")
                 logger.info(f"Wind: {speed:.2f} m/s ({speed*3.6:.1f} km/h, {speed*2.237:.1f} mph, {speed*1.944:.1f} knots), Pulses: {total_pulses} in last interval")
                 logger.info(f"Wind Vane: {voltage:.3f} V, Direction: {direction}, Direction name: {direction_name}, Confidence: {confidence}, Diff: {voltage_diff:.3f} V)")
+                logger.info(f"Rain: {rain_interval_mm:.3f}mm this interval, {rain_data['daily_mm']:.3f}mm daily total")
                 
                 # Save sensor data to database
                 timestamp = datetime.now().isoformat(timespec='seconds')
@@ -238,6 +248,7 @@ class WeatherStationManager:
                     wind_direction=direction,
                     wind_direction_name=direction_name,
                     wind_vane_voltage=voltage,
+                    rain_interval=rain_interval_mm
                 )
                 
                 if not success:
