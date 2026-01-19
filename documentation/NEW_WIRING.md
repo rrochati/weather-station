@@ -107,3 +107,175 @@ Cry in your bed
     | Pin 7	           |              |             |                 |
     | Pin 8	           |              |             |                 |
     * Decap a long peace from CAT6 cable or iron sold an extension here
+
+## Anemometer and wind vane split
+As wind vane is not working although wiring seams right and have continity, I will split anemometer from if and troubleshoot further later.
+This sections describes the changes made.
+
+- Disconect anemo from vane
+- Connect anemo to a RJ45/RJ11 splice
+- Connect a RJ11 cable to other end of splice
+- Iron sold the connections
+
+Anemo connecter have 2 wires in the middle: green and red. These are ground and anemo signal as we learned before.
+The RJ11 cable I'm using have 4 cables: Yellow, Blue, Rosé, White.
+I tested continuity on Blue + Rosé and I have the expected intermitent beep.
+
+So, let's test it on Pi
+First, make sure the GPIO is working:
+
+```bash
+~/weather-station/scripts/anemo $ python3 1-gpio_test.py 
+🔍 TESTING GPIO PULL-UP FUNCTIONALITY
+==================================================
+This test will verify if internal pull-ups work correctly
+Make sure GPIO17 (Pin 11) is DISCONNECTED for accurate testing
+
+Is GPIO17 (Pin 11) disconnected? (y/n): y
+🔧 GPIO PULL-UP VERIFICATION TEST
+==================================================
+📝 Test 1: GPIO with NO pull-up (floating)
+   Expected: Should read random/unstable values when disconnected
+   Readings (floating input):
+     Reading 1: 0
+     Reading 2: 0
+     Reading 3: 0
+     Reading 4: 0
+     Reading 5: 0
+     Reading 6: 0
+     Reading 7: 0
+     Reading 8: 0
+     Reading 9: 0
+     Reading 10: 0
+   📊 Result: All readings are 0 (stable)
+
+📝 Test 2: GPIO with INTERNAL pull-up
+   Expected: Should read HIGH (1) consistently
+   Readings (with internal pull-up):
+     Reading 1: 1
+     Reading 2: 1
+     Reading 3: 1
+     Reading 4: 1
+     Reading 5: 1
+     Reading 6: 1
+     Reading 7: 1
+     Reading 8: 1
+     Reading 9: 1
+     Reading 10: 1
+
+📝 Test 3: Manual connection test
+   Instructions:
+   1. Keep pin disconnected - should read HIGH
+   2. Connect GPIO17 to GND directly - should read LOW
+   3. Disconnect again - should read HIGH
+
+   Press Enter when ready to start live monitoring...
+
+🎯 Live monitoring (touch GPIO17 to GND to test):
+   Press Ctrl+C to stop
+   [13:21:29] Change: -1 → 1 (GND disconnected)
+   [13:21:37] Change: 1 → 0 (GND connected)
+   [13:21:37] Change: 0 → 1 (GND disconnected)
+   [13:21:38] Change: 1 → 0 (GND connected)
+   [13:21:38] Change: 0 → 1 (GND disconnected)
+   [13:21:38] Change: 1 → 0 (GND connected)
+   [13:21:38] Change: 0 → 1 (GND disconnected)
+   [13:21:38] Change: 1 → 0 (GND connected)
+   [13:21:38] Change: 0 → 1 (GND disconnected)
+   [13:21:38] Change: 1 → 0 (GND connected)
+   [13:21:39] Change: 0 → 1 (GND disconnected)
+   [13:21:39] Change: 1 → 0 (GND connected)
+   [13:21:39] Change: 0 → 1 (GND disconnected)
+   [13:21:39] Change: 1 → 0 (GND connected)
+   [13:21:39] Change: 0 → 1 (GND disconnected)
+   [13:21:39] Change: 1 → 0 (GND connected)
+   [13:21:39] Change: 0 → 1 (GND disconnected)
+   [13:21:39] Change: 1 → 0 (GND connected)
+   [13:21:39] Change: 0 → 1 (GND disconnected)
+   [13:21:40] Change: 1 → 0 (GND connected)
+   [13:21:40] Change: 0 → 1 (GND disconnected)
+   [13:21:40] Change: 1 → 0 (GND connected)
+   [13:21:40] Change: 0 → 1 (GND disconnected)
+   [13:21:40] Change: 1 → 0 (GND connected)
+   [13:21:40] Change: 0 → 1 (GND disconnected)
+   [13:21:41] Change: 1 → 0 (GND connected)
+   [13:21:41] Change: 0 → 1 (GND disconnected)
+   [13:21:41] Change: 1 → 0 (GND connected)
+   [13:21:41] Change: 0 → 1 (GND disconnected)
+   [13:21:42] Change: 1 → 0 (GND connected)
+   [13:21:42] Change: 0 → 1 (GND disconnected)
+   [13:21:42] Change: 1 → 0 (GND connected)
+   [13:21:42] Change: 0 → 1 (GND disconnected)
+ç^C
+🛑 Test stopped by user
+🧹 Cleaning up GPIO...
+✅ Test completed!
+🧹 Cleaning up GPIO...
+```
+
+The test the anemo itself:
+```bash
+~/weather-station/scripts/anemo $ python3 3-anemo_quick_test.py 
+🔧 Anemometer Quick Diagnostic Test
+============================================================
+✅ GPIO chip opened
+✅ GPIO17 claimed as input
+
+📍 Current GPIO17 state: 0
+   0 = LOW (ground), 1 = HIGH (3.3V/pull-up)
+   ⚠️  Pin is LOW - this suggests:
+      - Reed switch might be closed (magnet nearby), OR
+      - Signal wire shorted to ground, OR
+      - No pull-up resistance
+
+============================================================
+🔄 Monitoring for state changes...
+   Spin the anemometer and watch for transitions
+   Press Ctrl+C to stop
+============================================================
+⬆️  [1.712s] RISING edge (0→1) - Pulse #1
+⬇️  [1.966s] FALLING edge (1→0)
+⬆️  [2.520s] RISING edge (0→1) - Pulse #2
+⬇️  [2.838s] FALLING edge (1→0)
+⬆️  [3.371s] RISING edge (0→1) - Pulse #3
+⬇️  [3.793s] FALLING edge (1→0)
+⬆️  [3.892s] RISING edge (0→1) - Pulse #4
+⬇️  [3.942s] FALLING edge (1→0)
+⬆️  [4.031s] RISING edge (0→1) - Pulse #5
+⬇️  [4.076s] FALLING edge (1→0)
+⬆️  [4.180s] RISING edge (0→1) - Pulse #6
+⬇️  [4.237s] FALLING edge (1→0)
+⬆️  [4.337s] RISING edge (0→1) - Pulse #7
+⬇️  [4.389s] FALLING edge (1→0)
+⬆️  [4.506s] RISING edge (0→1) - Pulse #8
+⬇️  [4.571s] FALLING edge (1→0)
+⬆️  [4.683s] RISING edge (0→1) - Pulse #9
+⬇️  [4.742s] FALLING edge (1→0)
+⬆️  [4.873s] RISING edge (0→1) - Pulse #10
+⬇️  [4.947s] FALLING edge (1→0)
+⬆️  [5.074s] RISING edge (0→1) - Pulse #11
+⬇️  [5.140s] FALLING edge (1→0)
+⬆️  [5.290s] RISING edge (0→1) - Pulse #12
+⬇️  [5.372s] FALLING edge (1→0)
+⬆️  [5.517s] RISING edge (0→1) - Pulse #13
+⬇️  [5.592s] FALLING edge (1→0)
+⬆️  [5.761s] RISING edge (0→1) - Pulse #14
+⬇️  [5.856s] FALLING edge (1→0)
+⬆️  [6.020s] RISING edge (0→1) - Pulse #15
+⬇️  [6.106s] FALLING edge (1→0)
+⬆️  [6.299s] RISING edge (0→1) - Pulse #16
+⬇️  [6.407s] FALLING edge (1→0)
+^C
+
+🛑 Test stopped by user
+
+📊 Results:
+   Total pulses: 16
+   Test duration: 6.5s
+   Pulse rate: 2.45 pulses/sec
+   Estimated RPM: 146.7
+   Wind speed: 1.63 m/s (5.9 km/h)
+🔧 GPIO cleaned up
+```
+
+In my tests there were no difference between connecting Blue cable to GND and Rosé to anemo signal or vice-versa. So let's procced with this combination: Blue to GND and Rosé to signal.
