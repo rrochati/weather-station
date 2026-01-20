@@ -23,36 +23,50 @@ The NEO-M8N is a GPS module that uses the u-blox M8 chip. It provides accurate p
 
 ### 1. Enable UART on Raspberry Pi 5
 
+**⚠️ CRITICAL: UART must be enabled or /dev/ttyAMA0 won't exist!**
+
+#### Quick Method (Recommended):
+```bash
+cd ~/Documents/raspberry/weather-station/scripts
+chmod +x enable_uart_rpi5.sh
+sudo bash enable_uart_rpi5.sh
+# Reboot when prompted
+```
+
+#### Manual Method:
 Edit the config file:
 ```bash
-sudo nano /boot/firmware/config.txt
+sudo vim /boot/firmware/config.txt
 ```
 
-Add or modify these lines:
+Add these lines (in the `[all]` section or at the end):
 ```
-# Disable Bluetooth to free up UART0
-dtoverlay=disable-bt
-
-# Enable UART
+# GPS UART Configuration
 enable_uart=1
+dtoverlay=disable-bt
 ```
 
 Disable the serial console:
 ```bash
-sudo systemctl stop serial-getty@ttyAMA0.service
 sudo systemctl disable serial-getty@ttyAMA0.service
 ```
 
 Edit cmdline.txt to remove console settings:
 ```bash
-sudo nano /boot/firmware/cmdline.txt
+sudo vim /boot/firmware/cmdline.txt
 ```
 
 Remove any text containing `console=serial0,115200` or `console=ttyAMA0,115200`
 
-Reboot:
+**Reboot (REQUIRED):**
 ```bash
 sudo reboot
+```
+
+**After reboot, verify:**
+```bash
+ls -l /dev/ttyAMA0
+# Should show: crw-rw---- 1 root dialout ...
 ```
 
 ### 2. Install Required Software
@@ -70,7 +84,7 @@ pip3 install pyserial pynmea2
 
 Edit GPSD configuration:
 ```bash
-sudo nano /etc/default/gpsd
+sudo vim /etc/default/gpsd
 ```
 
 Set:
