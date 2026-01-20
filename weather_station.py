@@ -209,16 +209,30 @@ class WeatherStationManager:
         
         while True:
             try:
+                # Track loop start time for consistent intervals
+                loop_start_time = time.time()
+                
                 # Update weather data if it's time
                 if self.should_update_weather():
                     self.update_weather_data()
                 
-                # Read sensor data
+                # Read sensor data (quick readings)
                 temperature = self.bme280.temperature
                 humidity = self.bme280.humidity
                 pressure = self.bme280.pressure
                 altitude = self.bme280.altitude
                 
+                # Start wind speed measurement (this will block for wind_read_interval seconds)
+                # During this time, poll rain bucket frequently to catch tips
+                logger.debug("Starting wind speed measurement with rain polling...")
+                wind_start_time = time.time()
+                
+                # Poll rain bucket during wind measurement
+                while (time.time() - wind_start_time) < (wind_read_interval - 1):
+                    rain_bucket.check_for_tips()
+                    time.sleep(0.1)  # Poll every 100ms
+                
+                # Get final wind speed measurement
                 speed, total_pulses = measure_wind_speed(wind_read_interval)
                 
                 #voltage, direction, direction_name, confidence, voltage_diff = vane.read_wind_direction()
@@ -263,8 +277,14 @@ class WeatherStationManager:
                     logger.info("Next weather update: %s (in %s)", 
                                next_update_time.strftime('%H:%M'), time_until_next)
                 
-                # Wait for next reading
-                #time.sleep(SENSOR_READ_INTERVAL_MINUTES * 60)
+                # Calculate elapsed time and ensure consistent 60s intervals
+                loop_elapsed = time.time() - loop_start_time
+                if loop_elapsed < wind_read_interval:
+                    sleep_time = wind_read_interval - loop_elapsed
+                    logger.debug(f"Sleeping {sleep_time:.2f}s to complete {wind_read_interval}s interval")
+                    time.sleep(sleep_time)
+                else:
+                    logger.warning(f"Loop took {loop_elapsed:.2f}s, exceeding {wind_read_interval}s interval")
                 
             except KeyboardInterrupt:
                 logger.info("Keyboard interrupt received. Stopping weather station...")
