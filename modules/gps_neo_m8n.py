@@ -17,17 +17,18 @@ except ImportError:
     logging.warning("pynmea2 not installed. Install with: pip3 install pynmea2")
 
 try:
-    from gps3 import gps3
-    GPS3_AVAILABLE = True
+    import gps
+    GPS3_AVAILABLE = False
+    GPSD_AVAILABLE = True
 except ImportError:
     try:
-        import gps
-        GPS3_AVAILABLE = False
-        GPSD_AVAILABLE = True
+        from gps3 import gps3
+        GPS3_AVAILABLE = True
+        GPSD_AVAILABLE = False
     except ImportError:
         GPS3_AVAILABLE = False
         GPSD_AVAILABLE = False
-        logging.warning("GPS library not installed. Install with: sudo apt-get install python3-gps")
+        logging.warning("GPS library not available. Install with: sudo apt-get install python3-gps")
 
 
 class NEOM8N:
@@ -70,7 +71,7 @@ class NEOM8N:
         """Connect using GPSD daemon"""
         try:
             if GPSD_AVAILABLE:
-                self.gpsd_session = gps.gps(mode=gps.WATCH_ENABLE)
+                self.gpsd_session = gps.gps(mode=gps.WATCH_ENABLE | gps.WATCH_NEWSTYLE)
                 logging.info("Connected to GPSD")
                 return True
             elif GPS3_AVAILABLE:
@@ -81,7 +82,7 @@ class NEOM8N:
                 logging.info("Connected to GPSD (gps3)")
                 return True
             else:
-                logging.error("GPSD library not available")
+                logging.error("GPSD library not available. Install: sudo apt-get install python3-gps")
                 return False
         except Exception as e:
             logging.error(f"GPSD connection failed: {e}")
@@ -145,16 +146,20 @@ class NEOM8N:
                     report = self.gpsd_session.next()
                     
                     if report['class'] == 'TPV':
-                        if hasattr(report, 'lat') and hasattr(report, 'lon'):
+                        # Check for valid lat/lon in the dictionary
+                        lat = report.get('lat', None)
+                        lon = report.get('lon', None)
+                        
+                        if lat is not None and lon is not None and lat != 'n/a' and lon != 'n/a':
                             return {
-                                'latitude': report.lat,
-                                'longitude': report.lon,
-                                'altitude': getattr(report, 'alt', None),
-                                'speed': getattr(report, 'speed', None),
-                                'track': getattr(report, 'track', None),
-                                'time': getattr(report, 'time', None),
+                                'latitude': float(lat),
+                                'longitude': float(lon),
+                                'altitude': report.get('alt', None),
+                                'speed': report.get('speed', None),
+                                'track': report.get('track', None),
+                                'time': report.get('time', None),
                                 'satellites': None,
-                                'fix_quality': getattr(report, 'mode', 0),
+                                'fix_quality': report.get('mode', 0),
                                 'hdop': None
                             }
                 elif GPS3_AVAILABLE:
