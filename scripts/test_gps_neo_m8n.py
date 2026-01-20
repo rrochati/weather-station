@@ -6,7 +6,12 @@ Run this to verify GPS is working properly
 
 import sys
 import time
-sys.path.append('/Users/ricardorocha/Documents/raspberry/weather-station')
+import os
+
+# Add parent directory to path
+script_dir = os.path.dirname(os.path.abspath(__file__))
+parent_dir = os.path.dirname(script_dir)
+sys.path.insert(0, parent_dir)
 
 from modules.gps_neo_m8n import NEOM8N
 import logging
