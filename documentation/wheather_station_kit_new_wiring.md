@@ -117,7 +117,7 @@ This sections describes the changes made.
 - Connect a RJ11 cable to other end of splice
 - Iron sold the connections
 
-Anemo connecter have 2 wires in the middle: green and red. These are ground and anemo signal as we learned before.
+Anemo connector have 2 wires in the middle: green and red. These are ground and anemo signal as we learned before.
 The RJ11 cable I'm using have 4 cables: Yellow, Blue, Rosé, White.
 I tested continuity on Blue + Rosé and I have the expected intermitent beep.
 
